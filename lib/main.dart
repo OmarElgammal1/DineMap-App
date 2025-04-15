@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
-import 'dart:io'; // For Platform
-import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // For FFI support
+import 'db.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize SQLite for desktop platforms
-  if (Platform.isWindows || Platform.isLinux) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-
+  await DatabaseHelper.initialize(); // Initialize database helper
   runApp(MyApp());
 }
 

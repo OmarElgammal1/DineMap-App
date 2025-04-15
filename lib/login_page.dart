@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _studentIdController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
-                    Icons.shopping_bag,
+                    Icons.location_on,
                     size: 60,
                     color: Colors.purple,
                   ),
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
               const Center(
                 child: Text(
-                  'Fashion Shop',
+                  'Store Finder',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 10),
               const Center(
                 child: Text(
-                  'Login to continue shopping',
+                  'Login to find your favorite stores',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
@@ -68,15 +68,16 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
               TextFormField(
-                controller: _studentIdController,
+                controller: _emailController,
                 decoration: const InputDecoration(
-                  labelText: 'Student ID or Username',
-                  prefixIcon: Icon(Icons.account_circle),
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.text,
+                keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'ID is required';
+                  if (value == null || value.isEmpty) return 'Email is required';
+                  if (!value.contains('@')) return 'Enter a valid email address';
                   return null;
                 },
               ),
@@ -149,14 +150,14 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = true;
       });
 
-      final studentId = _studentIdController.text;
+      final email = _emailController.text;
       final password = _passwordController.text;
 
       try {
         // Initialize database and add test users if needed
         await _initializeDatabase();
 
-        User? user = await DatabaseHelper.instance.login(studentId, password);
+        User? user = await DatabaseHelper.instance.login(email, password);
 
         setState(() {
           _isLoading = false;
@@ -171,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Invalid ID or password.'),
+              content: Text('Invalid email or password.'),
               backgroundColor: Colors.red,
               duration: Duration(seconds: 3),
             ),
