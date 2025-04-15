@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'data.dart';
-import 'reviews_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
@@ -171,14 +170,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       Spacer(),
                       TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReviewsScreen(id: widget.id),
-                            ),
-                          );
-                        },
+                        onPressed: () {},
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.grey,
                         ),
@@ -256,18 +248,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      if (selectedSize != null) {
-                        cart.add({
-                          'id': widget.id,
-                          'quantity': 1,
-                          'size': selectedSize,
-                        });
-                        print(cart);
-                      } else {
-                        print('Please select a size');
-                      }
-                    },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                       padding:
