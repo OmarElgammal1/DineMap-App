@@ -138,9 +138,3 @@ Map<int, Map<String, dynamic>> products = {
     ]
   }
 };
-
-
-
-List<Map<String, dynamic>> cart = [{'id': 1, "quantity": 12, "size": "XL"}];
-
-List<Map<String, dynamic>> orders = [{'id': 1, "quantity": 12, "size": "XL"}];
