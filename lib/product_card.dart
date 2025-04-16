@@ -45,15 +45,15 @@ class _ProductCardState extends State<ProductCard> {
       _isFavorite = !_isFavorite;
     });
 
-    products[widget.id]?['isFavorite'] = _isFavorite;
-    print(products[widget.id]?['isFavorite']);
+    stores[widget.id]?['isFavorite'] = _isFavorite;
+    print(stores[widget.id]?['isFavorite']);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to ProductDetailScreen with the product id
+        // Navigate to ProductDetailScreen with the store id
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -70,7 +70,7 @@ class _ProductCardState extends State<ProductCard> {
               children: [
                 Stack(
                   children: [
-                    // Product Image
+                    // Store Image
                     Image.network(widget.imageUrl,
                         fit: BoxFit.cover, height: 120, width: double.infinity),
 
@@ -88,7 +88,7 @@ class _ProductCardState extends State<ProductCard> {
                     ),
                   ],
                 ),
-                // Product Name and Price
+                // Store Name and Distance
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -96,16 +96,21 @@ class _ProductCardState extends State<ProductCard> {
                     children: [
                       Text(widget.productName,
                           style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text("\$${widget.price.toString()}",
-                          style: TextStyle(color: Colors.grey)),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: 16, color: Colors.grey),
+                          SizedBox(width: 4),
+                          Text("${widget.price.toString()} km",
+                              style: TextStyle(color: Colors.grey)),
+                        ],
+                      ),
                     ],
                   ),
                 ),
-
               ],
             ),
-            // Delete button for Cart screen
-            if (widget.screenType == 'Cart')
+            // Delete button for Favorites screen
+            if (widget.screenType == 'Favorites')
               Positioned(
                 bottom: 0,
                 right: 50,
@@ -117,27 +122,23 @@ class _ProductCardState extends State<ProductCard> {
                   },
                 ),
               ),
-            // Size display (bottom-right corner)
-            if (widget.size != null)
-              Positioned(
-                bottom: 8,
-                right: 8,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    widget.size!,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
+            // Location icon (bottom-right corner)
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  Icons.directions,
+                  color: Colors.blue,
+                  size: 24,
                 ),
               ),
+            ),
           ],
         ),
       ),

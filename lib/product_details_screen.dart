@@ -11,17 +11,16 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  String? selectedSize;
-  int selectedImageIndex = 0;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    final product = products[widget.id];
+    final store = stores[widget.id];
 
-    if (product == null) {
+    if (store == null) {
       return Scaffold(
         body: Center(
-          child: Text('Product not found!'),
+          child: Text('Store not found!'),
         ),
       );
     }
@@ -38,7 +37,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_bag, color: Colors.black),
+            icon: Icon(Icons.share, color: Colors.black),
             onPressed: () {},
           ),
         ],
@@ -47,77 +46,68 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // main image
+            // store image
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0),
               child: Image.network(
-                product['imageUrls'][selectedImageIndex],
+                store['imageUrl'],
                 fit: BoxFit.cover,
                 width: double.infinity,
-                height: 300,
+                height: 200,
               ),
             ),
-            // images row
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(product['imageUrls'].length, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedImageIndex = index;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: selectedImageIndex == index ? Colors.purple : Colors.transparent,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Image.network(
-                          product['imageUrls'][index],
-                          fit: BoxFit.cover,
-                          width: 80,
-                          height: 80,
-                        ),
-                      )
-                    ),
-                  );
-                }),
+            // Store map preview
+            Container(
+              height: 150,
+              width: double.infinity,
+              color: Colors.grey[300],
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.map, size: 50, color: Colors.grey[700]),
+                    Text("Map Preview Placeholder", style: TextStyle(color: Colors.grey[700])),
+                  ],
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Men's Printed Pullover Hoodie",
+                    store['category'],
                     style: TextStyle(color: Colors.grey, fontSize: 14),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    product['productName'],
+                    store['storeName'],
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                   ),
                   SizedBox(height: 8),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '\$${product['price']}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
+                      Icon(Icons.location_on, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          store['address'],
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, color: Colors.grey),
+                      SizedBox(width: 4),
                       Text(
-                        'Size Guide',
+                        "Operating Hours: ${store['hours']}",
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 16,
@@ -126,18 +116,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   SizedBox(height: 12),
-                  Text(
-                    'Size',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 8),
                   Row(
                     children: [
-                      _buildSizeOption('S'),
-                      _buildSizeOption('M'),
-                      _buildSizeOption('L'),
-                      _buildSizeOption('XL'),
-                      _buildSizeOption('2XL'),
+                      Icon(Icons.phone, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text(
+                        store['phone'],
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 16),
@@ -147,7 +136,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'The Nike Throwback Pullover Hoodie is made from premium French terry fabric that blends a performance feel with Read More...',
+                    store['description'],
                     style: TextStyle(color: Colors.grey),
                   ),
                   SizedBox(height: 16),
@@ -194,12 +183,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            product['reviews'][0]['name'],
+                            store['reviews'][0]['name'],
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                           Text(
-                            product['reviews'][0]['date'],
+                            store['reviews'][0]['date'],
                             style: TextStyle(color: Colors.grey, fontSize: 12),
                           ),
                         ],
@@ -208,11 +197,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Row(
                         children: List.generate(5, (starIndex) {
                           if (starIndex <
-                              product['reviews'][0]['stars'].floor()) {
+                              store['reviews'][0]['rating'].floor()) {
                             return Icon(Icons.star, color: Colors.amber, size: 16);
                           } else if (starIndex ==
-                              product['reviews'][0]['stars'].floor() &&
-                              product['reviews'][0]['stars'] % 1 != 0) {
+                              store['reviews'][0]['rating'].floor() &&
+                              store['reviews'][0]['rating'] % 1 != 0) {
                             return Icon(Icons.star_half,
                                 color: Colors.amber, size: 16);
                           } else {
@@ -223,7 +212,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        '${product['reviews'][0]['stars']}',
+                        '${store['reviews'][0]['rating']}',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
@@ -231,7 +220,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    product['reviews'][0]['details'],
+                    store['reviews'][0]['comment'],
                     style: TextStyle(color: Colors.grey),
                   ),
                 ],
@@ -243,20 +232,51 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '\$${product['price']}',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${store['distance']} km away',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      Text(
+                        'Estimated travel time: ${store['travelTime']} min',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
+                  ElevatedButton.icon(
+                    onPressed: _isLoading ? null : () {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      // Simulate API call
+                      Future.delayed(Duration(seconds: 2), () {
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Directions loaded!')),
+                        );
+                      });
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple,
-                      padding:
-                      EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      backgroundColor: Colors.blue,
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
-                    child: Text(
-                      'Add to Cart',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    icon: _isLoading
+                        ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                        : Icon(Icons.directions, color: Colors.white),
+                    label: Text(
+                      'Get Directions',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],
@@ -265,33 +285,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSizeOption(String size) {
-    bool isSelected = selectedSize == size;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedSize = size;
-        });
-      },
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 4.0),
-        padding: EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? Colors.purple : Colors.grey,
-          ),
-          borderRadius: BorderRadius.circular(4.0),
-          color: isSelected ? Colors.purple.withOpacity(0.8) : null,
-        ),
-        child: Text(size,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : Colors.black)),
       ),
     );
   }

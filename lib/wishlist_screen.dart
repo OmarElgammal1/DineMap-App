@@ -12,32 +12,32 @@ class WishlistScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var favoriteProducts = products.entries
+    var storeList = stores.entries
         .where((entry) => entry.value['isFavorite'] == true)
         .toList();
 
     return GridView.builder(
-        itemCount: favoriteProducts.length,
+        itemCount: storeList.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
         itemBuilder: (context, index) {
-          var productEntry = favoriteProducts[index];
-          var product = productEntry.value;
+          var storeEntry = storeList[index];
+          var store = storeEntry.value;
 
 
           return ProductCard(
-            id: productEntry.key,
-            productName: product['productName'],
-            imageUrl: product['imageUrls'][0],
-            price: product['price'],
-            isFavorite: true,
+            id: storeEntry.key,
+            productName: store['storeName'],
+            imageUrl: store['imageUrl'],
+            price: store['distance'],
+            isFavorite: store['isFavorite'],
             screenType: screenType,
             onAddToCart: () {
-              print('${product['productName']} added to cart');
+              print('${store['storeName']} selected');
             },
             onRemoveFromCart: () {
-              print('${product['productName']} removed from wishlist');
+              print('${store['storeName']} removed from favorites');
             },
           );
         },
