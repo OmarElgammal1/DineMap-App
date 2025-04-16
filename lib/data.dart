@@ -1,140 +1,140 @@
-import 'package:flutter/material.dart';
-
-
-
-
-Map<int, Map<String, dynamic>> products = {
+// Sample store data to replace product data
+final Map<int, Map<String, dynamic>> stores = {
   1: {
-    'productName': 'Nike Sportswear Club Fleece',
-    'price': 99.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw58f7d23c/sss/SSS2/N/K/C/Z/7/SSS2_NKCZ7718_510_194501879071_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw29b01461/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_2.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw29b01461/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_2.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': true,
+    'storeName': 'Downtown Coffee',
+    'category': 'Coffee Shop',
+    'address': '123 Main St, New York, NY 10001',
+    'latitude': 40.7128,
+    'longitude': -74.0060,
+    'imageUrl': 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '7:00 AM - 9:00 PM',
+    'phone': '(212) 555-1234',
+    'description': 'A cozy downtown coffee shop offering artisanal coffees, pastries, and a quiet atmosphere for work or meetings.',
     'reviews': [
-      {"name": "Mohsen", "date": "10 Sep 2024", "details": "Very good product", "stars": 4.5},
-      {"name": "Amina", "date": "12 Sep 2024", "details": "Loved it, fits perfectly!", "stars": 4.7}
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment': 'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.'
+      }
     ]
   },
   2: {
-    'productName': 'Adidas Ultraboost Running Shoes',
-    'price': 150.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw1afdec19/sss/SSS2/N/K/A/R/4/SSS2_NKAR4997_101_191888618378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': false,
+    'storeName': 'Tech Haven',
+    'category': 'Electronics Store',
+    'address': '456 Broadway, New York, NY 10013',
+    'latitude': 40.7193,
+    'longitude': -74.0017,
+    'imageUrl': 'https://images.unsplash.com/photo-1518997554305-5eea2f04e384?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'distance': 2.5,
+    'travelTime': 20,
+    'isFavorite': true,
+    'hours': '10:00 AM - 8:00 PM',
+    'phone': '(212) 555-5678',
+    'description': 'Your one-stop shop for all things tech. We carry the latest gadgets, accessories, and offer repair services.',
     'reviews': [
-      {"name": "John", "date": "05 Sep 2024", "details": "Super comfortable!", "stars": 4.8},
-      {"name": "Chris", "date": "01 Aug 2024", "details": "Great for running long distances", "stars": 4.6}
+      {
+        'name': 'Michael Johnson',
+        'date': 'April 2, 2025',
+        'rating': 5.0,
+        'comment': 'Amazing selection of products and very knowledgeable staff. They helped me find exactly what I needed.'
+      }
     ]
   },
   3: {
-    'productName': 'Puma Essentials Hoodie',
-    'price': 60.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': true,
+    'storeName': 'Green Grocery',
+    'category': 'Grocery Store',
+    'address': '789 Park Ave, New York, NY 10021',
+    'latitude': 40.7705,
+    'longitude': -73.9653,
+    'imageUrl': 'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'distance': 0.8,
+    'travelTime': 10,
+    'isFavorite': false,
+    'hours': '8:00 AM - 10:00 PM',
+    'phone': '(212) 555-9012',
+    'description': 'Fresh, organic produce and locally sourced goods. We prioritize sustainable practices and offer a wide variety of health foods.',
     'reviews': [
-      {"name": "Sarah", "date": "15 Aug 2024", "details": "Perfect for winter", "stars": 4.3},
-      {"name": "James", "date": "28 Aug 2024", "details": "Great quality, but runs a bit large", "stars": 4.0}
+      {
+        'name': 'Emily Davis',
+        'date': 'March 28, 2025',
+        'rating': 4.0,
+        'comment': 'Great selection of organic produce. Prices are a bit high but the quality is worth it.'
+      }
     ]
   },
   4: {
-    'productName': 'Under Armour Charged Bandit 6',
-    'price': 85.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw58f7d23c/sss/SSS2/N/K/C/Z/7/SSS2_NKCZ7718_510_194501879071_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw58f7d23c/sss/SSS2/N/K/C/Z/7/SSS2_NKCZ7718_510_194501879071_1.jpg?sw=700&sh=700&sm=fit'
-
-    ],
-    'isFavorite': false,
+    'storeName': 'Fashion Forward',
+    'category': 'Clothing Store',
+    'address': '321 5th Ave, New York, NY 10016',
+    'latitude': 40.7448,
+    'longitude': -73.9853,
+    'imageUrl': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'distance': 1.5,
+    'travelTime': 18,
+    'isFavorite': true,
+    'hours': '11:00 AM - 9:00 PM',
+    'phone': '(212) 555-3456',
+    'description': 'Trendy clothing and accessories for the fashion-conscious. We feature new collections every season from both established and emerging designers.',
     'reviews': [
-      {"name": "Mike", "date": "22 Jul 2024", "details": "Great value for the price", "stars": 4.2},
-      {"name": "Anna", "date": "19 Jul 2024", "details": "Comfortable but not durable", "stars": 3.9}
+      {
+        'name': 'Sarah Williams',
+        'date': 'April 10, 2025',
+        'rating': 4.2,
+        'comment': 'Love their selection! Staff is helpful and they often have good sales.'
+      }
     ]
   },
   5: {
-    'productName': 'Reebok Classic Leather Sneakers',
-    'price': 90.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw1afdec19/sss/SSS2/N/K/A/R/4/SSS2_NKAR4997_101_191888618378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-
-    ],
-    'isFavorite': true,
+    'storeName': 'Book Nook',
+    'category': 'Bookstore',
+    'address': '567 Lexington Ave, New York, NY 10022',
+    'latitude': 40.7573,
+    'longitude': -73.9712,
+    'imageUrl': 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'distance': 3.0,
+    'travelTime': 25,
+    'isFavorite': false,
+    'hours': '9:00 AM - 8:00 PM',
+    'phone': '(212) 555-7890',
+    'description': 'A charming independent bookstore with a carefully curated selection of books across all genres. We also host regular author events and book clubs.',
     'reviews': [
-      {"name": "Emily", "date": "02 Sep 2024", "details": "Classic and comfortable", "stars": 4.7},
-      {"name": "Tom", "date": "18 Aug 2024", "details": "Good quality but a bit narrow", "stars": 4.2}
+      {
+        'name': 'David Brown',
+        'date': 'March 15, 2025',
+        'rating': 4.8,
+        'comment': 'My favorite bookstore in the city! Great ambiance and they always have excellent recommendations.'
+      }
     ]
   },
   6: {
-    'productName': 'Asics Gel-Kayano 27',
-    'price': 160.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
+    'storeName': 'Sports Central',
+    'category': 'Sporting Goods',
+    'address': '890 7th Ave, New York, NY 10019',
+    'latitude': 40.7645,
+    'longitude': -73.9801,
+    'imageUrl': 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+    'distance': 2.2,
+    'travelTime': 22,
     'isFavorite': false,
+    'hours': '10:00 AM - 7:00 PM',
+    'phone': '(212) 555-2345',
+    'description': 'Everything you need for sports and fitness. We carry equipment and apparel for all major sports and outdoor activities.',
     'reviews': [
-      {"name": "Alex", "date": "12 Sep 2024", "details": "Great for long runs", "stars": 4.9},
-      {"name": "Dylan", "date": "03 Sep 2024", "details": "Excellent support for runners", "stars": 4.8}
+      {
+        'name': 'Robert Wilson',
+        'date': 'April 5, 2025',
+        'rating': 3.9,
+        'comment': 'Good selection of equipment but some items are overpriced. Staff is knowledgeable though.'
+      }
     ]
   },
-  7: {
-    'productName': 'New Balance 574 Core',
-    'price': 80.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw1afdec19/sss/SSS2/N/K/A/R/4/SSS2_NKAR4997_101_191888618378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': true,
-    'reviews': [
-      {"name": "Chris", "date": "18 Aug 2024", "details": "Retro style, love it!", "stars": 4.6},
-      {"name": "Laura", "date": "22 Aug 2024", "details": "Stylish but not the best fit", "stars": 4.0}
-    ]
-  },
-  8: {
-    'productName': 'Converse Chuck Taylor All Star',
-    'price': 55.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw1afdec19/sss/SSS2/N/K/A/R/4/SSS2_NKAR4997_101_191888618378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': false,
-    'reviews': [
-      {"name": "Taylor", "date": "30 Jul 2024", "details": "A timeless classic", "stars": 4.8},
-      {"name": "Jake", "date": "15 Jul 2024", "details": "Not as durable as expected", "stars": 3.9}
-    ]
-  },
-  9: {
-    'productName': 'Vans Old Skool',
-    'price': 65.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw1afdec19/sss/SSS2/N/K/A/R/4/SSS2_NKAR4997_101_191888618378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': true,
-    'reviews': [
-      {"name": "Jordan", "date": "05 Sep 2024", "details": "Durable and stylish", "stars": 4.4},
-      {"name": "Amanda", "date": "02 Sep 2024", "details": "Fits well, and looks amazing", "stars": 4.6}
-    ]
-  },
-  10: {
-    'productName': 'Fila Disruptor II',
-    'price': 70.0,
-    'imageUrls': [
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dw1afdec19/sss/SSS2/N/K/A/R/4/SSS2_NKAR4997_101_191888618378_1.jpg?sw=700&sh=700&sm=fit',
-      'https://en-kw.sssports.com/dw/image/v2/BDVB_PRD/on/demandware.static/-/Sites-akeneo-master-catalog/default/dwffa71423/sss/SSS2/N/K/D/R/7/SSS2_NKDR7571_010_196147019378_1.jpg?sw=700&sh=700&sm=fit'
-    ],
-    'isFavorite': false,
-    'reviews': [
-      {"name": "Leslie", "date": "28 Aug 2024", "details": "Chunky but comfortable", "stars": 4.3},
-      {"name": "Harper", "date": "20 Aug 2024", "details": "Stylish but heavy", "stars": 4.1}
-    ]
-  }
+};
+
+// Keep this as a fallback if needed for other parts of the app
+final Map<int, Map<String, dynamic>> products = {
+  // Empty or with minimal data if needed
 };
