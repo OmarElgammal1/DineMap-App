@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'data.dart';
+import 'openroute_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
@@ -12,6 +17,140 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isLoading = false;
+  Position? _currentPosition;
+  Map<String, String>? _directionsSummary;
+  List<Map<String, dynamic>>? _directionsSteps;
+  List<LatLng> _routePoints = [];
+  bool _showDirections = false;
+  MapController _mapController = MapController();
+
+  @override
+  void initState() {
+    super.initState();
+    _determinePosition();
+  }
+
+  // Get the user's current location
+  Future<void> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Location services are disabled')),
+        );
+        return;
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Location permissions are denied')),
+          );
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Location permissions are permanently denied')),
+        );
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _currentPosition = position;
+      });
+    } catch (e) {
+      print('Error getting position: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error accessing location: $e')),
+      );
+    }
+  }
+
+  // Get directions from current location to store
+  Future<void> _getDirections(double storeLat, double storeLng) async {
+    if (_currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Waiting for your location...')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await OpenRouteService.getDirections(
+        start: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+        end: LatLng(storeLat, storeLng),
+      );
+
+      setState(() {
+        _directionsSummary = OpenRouteService.getDirectionsSummary(response);
+        _directionsSteps = OpenRouteService.getDirectionsSteps(response);
+        _routePoints = OpenRouteService.decodePolyline(response);
+        _showDirections = true;
+        _isLoading = false;
+      });
+
+      // Center the map to fit the route
+      if (_routePoints.isNotEmpty) {
+        _mapController.fitBounds(
+          LatLngBounds.fromPoints(_routePoints),
+          options: const FitBoundsOptions(padding: EdgeInsets.all(50.0)),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error getting directions: $e')),
+      );
+    }
+  }
+
+  // Open navigation in external maps app
+  Future<void> _launchMapsUrl(double lat, double lng, String label) async {
+    if (_currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Waiting for your location...')),
+      );
+      return;
+    }
+
+    try {
+      final Uri googleUrl = Uri.parse(
+          'https://www.google.com/maps/dir/?api=1&origin=${_currentPosition!.latitude},${_currentPosition!.longitude}&destination=$lat,$lng&travelmode=driving'
+      );
+      final Uri appleUrl = Uri.parse('https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m');
+      final Uri osmUrl = Uri.parse(
+          'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=${_currentPosition!.latitude}%2C${_currentPosition!.longitude}%3B$lat%2C$lng'
+      );
+
+      if (await canLaunchUrl(googleUrl)) {
+        await launchUrl(googleUrl);
+      } else if (await canLaunchUrl(appleUrl)) {
+        await launchUrl(appleUrl);
+      } else if (await canLaunchUrl(osmUrl)) {
+        await launchUrl(osmUrl);
+      } else {
+        throw 'Could not launch maps';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error launching maps: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +163,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
       );
     }
+
+    final double storeLat = store['latitude'];
+    final double storeLng = store['longitude'];
 
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +188,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // store image
+            // Store image
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 0),
               child: Image.network(
@@ -56,21 +198,63 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 height: 200,
               ),
             ),
-            // Store map preview
+            // Store map preview with route if available
             Container(
-              height: 150,
+              height: 200,
               width: double.infinity,
-              color: Colors.grey[300],
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.map, size: 50, color: Colors.grey[700]),
-                    Text("Map Preview Placeholder", style: TextStyle(color: Colors.grey[700])),
-                  ],
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  center: LatLng(storeLat, storeLng),
+                  zoom: 15,
                 ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.app',
+                  ),
+                  // Draw the route line if available
+                  if (_routePoints.isNotEmpty)
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: _routePoints,
+                          strokeWidth: 4.0,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
+                  MarkerLayer(
+                    markers: [
+                      // Store marker
+                      Marker(
+                        point: LatLng(storeLat, storeLng),
+                        width: 80,
+                        height: 80,
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 40,
+                        ),
+                      ),
+                      // Current location marker
+                      if (_currentPosition != null)
+                        Marker(
+                          point: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+                          width: 80,
+                          height: 80,
+                          child: Icon(
+                            Icons.my_location,
+                            color: Colors.blue,
+                            size: 30,
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Column(
@@ -227,6 +411,105 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
             SizedBox(height: 16),
+
+
+            // Display directions information if available
+            if (_showDirections && _directionsSummary != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Directions',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Distance', style: TextStyle(color: Colors.grey)),
+                                  Text(
+                                    _directionsSummary!['distance'] ?? '',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Duration', style: TextStyle(color: Colors.grey)),
+                                  Text(
+                                    _directionsSummary!['duration'] ?? '',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  _launchMapsUrl(storeLat, storeLng, store['storeName']);
+                                },
+                                child: Text(
+                                  'Open in Maps',
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Show the step-by-step directions if available
+                          if (_directionsSteps != null && _directionsSteps!.isNotEmpty)
+                            ExpansionTile(
+                              title: Text('Step-by-step directions'),
+                              children: _directionsSteps!.map((step) {
+                                IconData iconData;
+                                switch (step['type']) {
+                                  case 10: // Start
+                                    iconData = Icons.trip_origin;
+                                    break;
+                                  case 11: // Finish
+                                    iconData = Icons.place;
+                                    break;
+                                  case 1: // Right
+                                    iconData = Icons.turn_right;
+                                    break;
+                                  case 2: // Left
+                                    iconData = Icons.turn_left;
+                                    break;
+                                  case 5: // Roundabout
+                                    iconData = Icons.roundabout_left;
+                                    break;
+                                  default:
+                                    iconData = Icons.arrow_forward;
+                                }
+
+                                return ListTile(
+                                  leading: Icon(iconData),
+                                  title: Text(step['instruction']),
+                                  subtitle: Text('${step['distance']} · ${step['duration']}'),
+                                );
+                              }).toList(),
+                            ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
+              ),
+
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -246,20 +529,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   ElevatedButton.icon(
-                    onPressed: _isLoading ? null : () {
-                      setState(() {
-                        _isLoading = true;
-                      });
-                      // Simulate API call
-                      Future.delayed(Duration(seconds: 2), () {
-                        setState(() {
-                          _isLoading = false;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Directions loaded!')),
-                        );
-                      });
-                    },
+                    onPressed: _isLoading ? null : () => _getDirections(storeLat, storeLng),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'data.dart';
 import 'product_details_screen.dart';
 
@@ -47,6 +49,41 @@ class _ProductCardState extends State<ProductCard> {
 
     stores[widget.id]?['isFavorite'] = _isFavorite;
     print(stores[widget.id]?['isFavorite']);
+  }
+
+  // Launch maps with directions to store
+  Future<void> _openDirections() async {
+    final store = stores[widget.id];
+    if (store == null) return;
+
+    double lat = store['latitude'];
+    double lng = store['longitude'];
+
+    try {
+      // Get current location
+      Position position = await Geolocator.getCurrentPosition();
+
+      // Try to launch Google Maps first, then Apple Maps, then OSM
+      final Uri googleUrl = Uri.parse(
+          'https://www.google.com/maps/dir/?api=1&origin=${position.latitude},${position.longitude}&destination=$lat,$lng&travelmode=driving'
+      );
+      final Uri appleUrl = Uri.parse('https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m');
+      final Uri osmUrl = Uri.parse(
+          'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=${position.latitude}%2C${position.longitude}%3B$lat%2C$lng'
+      );
+
+      if (await canLaunchUrl(googleUrl)) {
+        await launchUrl(googleUrl);
+      } else if (await canLaunchUrl(appleUrl)) {
+        await launchUrl(appleUrl);
+      } else if (await canLaunchUrl(osmUrl)) {
+        await launchUrl(osmUrl);
+      } else {
+        throw 'Could not launch maps';
+      }
+    } catch (e) {
+      print('Error opening directions: $e');
+    }
   }
 
   @override
@@ -126,16 +163,19 @@ class _ProductCardState extends State<ProductCard> {
             Positioned(
               bottom: 8,
               right: 8,
-              child: Container(
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  Icons.directions,
-                  color: Colors.blue,
-                  size: 24,
+              child: GestureDetector(
+                onTap: _openDirections,
+                child: Container(
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    Icons.directions,
+                    color: Colors.blue,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
