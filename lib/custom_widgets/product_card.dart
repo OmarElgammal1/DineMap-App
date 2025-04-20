@@ -65,11 +65,13 @@ class _ProductCardState extends State<ProductCard> {
 
       // Try to launch Google Maps first, then Apple Maps, then OSM
       final Uri googleUrl = Uri.parse(
-          'https://www.google.com/maps/dir/?api=1&origin=${position.latitude},${position.longitude}&destination=$lat,$lng&travelmode=driving'
+        'https://www.google.com/maps/dir/?api=1&origin=${position.latitude},${position.longitude}&destination=$lat,$lng&travelmode=driving',
       );
-      final Uri appleUrl = Uri.parse('https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m');
+      final Uri appleUrl = Uri.parse(
+        'https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m',
+      );
       final Uri osmUrl = Uri.parse(
-          'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=${position.latitude}%2C${position.longitude}%3B$lat%2C$lng'
+        'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=${position.latitude}%2C${position.longitude}%3B$lat%2C$lng',
       );
 
       if (await canLaunchUrl(googleUrl)) {
@@ -99,85 +101,92 @@ class _ProductCardState extends State<ProductCard> {
         );
       },
       child: Card(
+        margin: EdgeInsets.all(4.0), // Adds margin around the card for spacing
+        clipBehavior: Clip.antiAlias, // Clips the content to the card's shape
         elevation: 5,
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Stack(
-                  children: [
-                    // Store Image
-                    Image.network(widget.imageUrl,
-                        fit: BoxFit.cover, height: 120, width: double.infinity),
-
-                    // Favorite Icon (Top-right corner)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: GestureDetector(
-                        onTap: toggleFavorite,
-                        child: Icon(
-                          _isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: _isFavorite ? Colors.red : Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
+                Image.network(
+                  widget.imageUrl,
+                  fit: BoxFit.cover,
+                  height: 120,
+                  width: double.infinity,
                 ),
                 // Store Name and Distance
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.productName,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        widget.productName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       Row(
                         children: [
                           Icon(Icons.location_on, size: 16, color: Colors.grey),
                           SizedBox(width: 4),
-                          Text("${widget.price.toString()} km",
-                              style: TextStyle(color: Colors.grey)),
+                          Text(
+                            "${widget.price.toString()} km",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      // Row containing Favorite Icon and Location Icon
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // Favorite Icon
+                          Positioned(
+                            bottom: 8,
+                            right: 50,
+                            child: GestureDetector(
+                              onTap: toggleFavorite,
+                              child: Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.red[100],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Icon(
+                                  _isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: _isFavorite ? Colors.red : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          // Location Icon
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: _openDirections,
+                              child: Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[100],
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Icon(
+                                  Icons.directions,
+                                  color: Colors.blue,
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
               ],
-            ),
-            // Delete button for Favorites screen
-            if (widget.screenType == 'Favorites')
-              Positioned(
-                bottom: 0,
-                right: 50,
-                child: IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    if (widget.onRemoveFromCart != null)
-                      widget.onRemoveFromCart!();
-                  },
-                ),
-              ),
-            // Location icon (bottom-right corner)
-            Positioned(
-              bottom: 8,
-              right: 8,
-              child: GestureDetector(
-                onTap: _openDirections,
-                child: Container(
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Icon(
-                    Icons.directions,
-                    color: Colors.blue,
-                    size: 24,
-                  ),
-                ),
-              ),
             ),
           ],
         ),

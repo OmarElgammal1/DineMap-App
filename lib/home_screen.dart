@@ -40,15 +40,19 @@ class HomeScreen extends StatelessWidget {
           ),
           expandedHeight: 80.0,
         ),
-        SliverGrid(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10.0,
-            mainAxisSpacing: 10.0,
-            childAspectRatio: 0.75,
-          ),
-          delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
+        SliverPadding(
+          padding: const EdgeInsets.all(13.0),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+              childAspectRatio: 0.8,
+            ),
+            delegate: SliverChildBuilderDelegate((
+              BuildContext context,
+              int index,
+            ) {
               var storeEntry = storeList[index];
               var store = storeEntry.value;
 
@@ -66,8 +70,7 @@ class HomeScreen extends StatelessWidget {
                   print('${store['storeName']} removed from favorites');
                 },
               );
-            },
-            childCount: storeList.length,
+            }, childCount: storeList.length),
           ),
         ),
       ],
