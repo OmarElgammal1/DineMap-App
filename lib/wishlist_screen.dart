@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'product_card.dart';
+import 'custom_widgets/product_card.dart';
 
-import 'data.dart';
+import 'models/data.dart';
 
 
 

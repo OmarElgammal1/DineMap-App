@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'login_page.dart';
-import 'db.dart';
+import 'registration/login_page.dart';
+import 'utils/db.dart';
 
 
 void main() async {

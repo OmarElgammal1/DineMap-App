@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'data.dart';
-import 'product_details_screen.dart';
+import '../models/data.dart';
+import '../product_details_screen.dart';
 
 class ProductCard extends StatefulWidget {
   final int id;

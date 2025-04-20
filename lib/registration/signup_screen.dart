@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'main_screen.dart'; // Import shop main screen
-import 'user.dart';
-import 'db.dart';
+import '../utils/main_screen.dart'; // Import shop main screen
+import '../models/user.dart';
+import '../utils/db.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);

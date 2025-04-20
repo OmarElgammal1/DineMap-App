@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
-import 'main_screen.dart'; // Import shop main screen
-import 'db.dart';
-import 'user.dart';
+import '../utils/main_screen.dart'; // Import shop main screen
+import '../utils/db.dart';
+import '../models/user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'product_card.dart';
-import 'data.dart';
+import 'custom_widgets/product_card.dart';
+import 'models/data.dart';
 
 class HomeScreen extends StatelessWidget {
   final String screenType;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'wishlist_screen.dart';
+import '../home_screen.dart';
+import '../wishlist_screen.dart';
 import 'nav_bar.dart';
-import 'shop_app_bar.dart';
+import '../custom_widgets/shop_app_bar.dart';
 
 
 
