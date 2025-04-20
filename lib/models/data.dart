@@ -1,6 +1,219 @@
 // Sample store data to replace product data
 final Map<int, Map<String, dynamic>> stores = {
-  1: {
+  0: {
+    'storeName': 'ElDabagh',
+    'category': 'Restaurant',
+    'address': '123 Main St, New York, NY 10001',
+    'latitude': 30.047825,
+    'longitude': 31.346945,
+    'imageUrl':
+        'https://blogger.googleusercontent.com/img/a/AVvXsEjmBLPSq4_UCcHv-PFH7iLnIIkyUXr_MZXHXX76oLl1-feCytWcKeYAdEdV1jX5EEVq4w9fnb38kL5kbUpYAYZRFissDmenxUx5DL8qaMNMT9DoLoq77DqE3rVu3dgPPzMvK5jzrJoSDFzh67GfHHwRC2y9-qYXnZjrpL1fBAWblIyvzVHhv_j7dWfl=w640-h358-rw',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': true,
+    'hours': '7:00 AM - 9:00 PM',
+    'phone': '(212) 555-1234',
+    'description':
+        'A cozy downtown coffee shop offering artisanal coffees, pastries, and a quiet atmosphere for work or meetings.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  2: {
+    'storeName': 'Anas EL Demeshky',
+    'category': 'Restaurant',
+    'address':
+        '48 Abbas El-Akkad, Al Manteqah Al Oula, Nasr City, Cairo Governorate 4450320',
+    'latitude': 30.061353972137116,
+    'longitude': 31.33786591041985,
+    'imageUrl':
+        'https://lh3.googleusercontent.com/p/AF1QipMuJCLIn-b12cYWMfEwYp4SwizgeraRoMtzTAN9=w408-h306-k-no',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '9:00 AM - 4:00 AM',
+    'phone': '(212) 555-1234',
+    'description': 'A cool syrian restaurant with great location.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  3: {
+    'storeName': 'Helados',
+    'category': 'Restaurant',
+    'address':
+        'Abou Dawoud Al Zaheri, Al Mintaqah as Sādisah, Nasr City, Cairo Governorate 4450415',
+    'latitude': 30.060366170315636,
+    'longitude': 31.347448148113944,
+    'imageUrl':
+        'https://lh3.googleusercontent.com/p/AF1QipOBx3R5ivK9uPc2gQAk7cWNcGCMindt01ys5t6l=w408-h525-k-no',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': true,
+    'hours': '3:00 PM - 1:00 AM',
+    'phone': '(212) 555-1234',
+    'description':
+        'A cozy dessert shop offering tasty cookies and ice cream and more.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  4: {
+    'storeName': 'Al Refaei Butcher and Hawawshi',
+    'category': 'Restaurant',
+    'address':
+        '87 El-Shaikh Rihan, As Saqayin, Abdeen, Cairo Governorate 4281023',
+    'latitude': 30.041243377945,
+    'longitude': 31.246889329519806,
+    'imageUrl':
+        'https://lh3.googleusercontent.com/p/AF1QipPsl-AsYIv4EplM3mhPRKAvjtquR6EzBc6rv50=w408-h306-k-no',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '11:00 AM - 1:00 AM',
+    'phone': '(212) 555-1234',
+    'description':
+        'A cozy downtown coffee shop offering artisanal coffees, pastries, and a quiet atmosphere for work or meetings.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  5: {
+    'storeName': 'Abou Haidar Shawerma',
+    'category': 'Restaurant',
+    'address':
+        '38R9+JF8 el korba, Ibrahim Al Lakani, El-Montaza, Heliopolis, Cairo Governorate 4460204',
+    'latitude': 30.09172191473503,
+    'longitude': 31.318666610372116,
+    'imageUrl':
+        'https://lh3.googleusercontent.com/p/AF1QipPK8BLK3ps-R9lJXVn9rIyH4zY0t9s3VM79PKPr=w426-h240-k-no',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '8:30 PM - 1:30 AM',
+    'phone': '(212) 555-1234',
+    'description':
+        'A cozy dessert shop offering tasty cookies and ice cream and more.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  6: {
+    'storeName': 'El Baraka Fried Chicken',
+    'category': 'Restaurant',
+    'address':
+        '14 Kafr Saqr, كامب شيزار، Bab Sharqi, Alexandria Governorate 5424071',
+    'latitude': 31.214559540422705,
+    'longitude': 29.92085285046518,
+    'imageUrl':
+        'https://lh3.googleusercontent.com/p/AF1QipNQgNN9yjL3XgTCPIbidqD8wAvbnTwvkLGBqWJT=w427-h240-k-no',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '9:00 AM - 4:00 AM',
+    'phone': '(212) 555-1234',
+    'description':
+        'A cozy dessert shop offering tasty cookies and ice cream and more.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  7: {
+    'storeName': 'Al Qallaa',
+    'category': 'Restaurant',
+    'address':
+        '84 Port Said St, Al Ibrahimeyah Bahri WA Sidi Gaber, Bab Sharqi, Alexandria Governorate 5424072',
+    'latitude': 31.214225510777624,
+    'longitude': 29.92232431367755,
+    'imageUrl':
+        'https://blogger.googleusercontent.com/img/a/AVvXsEg9VqAqQHMw06QB2ag1OjWEmqAB4C4RbEd0XG_73PQ0K1oEOski8eMDz7pnL3iYf0lbiLrb1sX0thoj6IFJbGToD99oM6h1ICEUyLxgnr7PoQwfyS1vCkPQJCZZaB70r3bovu9Ela3W9dSXTom-5MvjR24N8qYFr_ormJWLj-W3NguR-LW6vOMnKzMh=w1280-h720-p-k-no-nu',
+    'distance': 1.2,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '3:00 PM - 4:00 AM',
+    'phone': '(212) 555-1234',
+    'description':
+        'A cozy dessert shop offering tasty cookies and ice cream and more.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+  8: {
+    'storeName': 'Dahab Pastry',
+    'category': 'Restaurant',
+    'address': 'El-Gaish, Tanta Qism 2, Tanta, Gharbia Governorate 6634023',
+    'latitude': 30.81586245914087,
+    'longitude': 30.993201450358292,
+    'imageUrl':
+        'https://lh3.googleusercontent.com/p/AF1QipMzQYoAsyhHHQghR8HdhF_cDY4AxVQ-4GtUae1I=w408-h295-k-no',
+    'distance': 120.0,
+    'travelTime': 15,
+    'isFavorite': false,
+    'hours': '10:00 AM - 1:00 AM',
+    'phone': '(040) 357-7094',
+    'description':
+        'A cozy dessert shop offering tasty cookies and ice cream and more.',
+    'reviews': [
+      {
+        'name': 'Jane Smith',
+        'date': 'March 12, 2025',
+        'rating': 4.5,
+        'comment':
+            'Great coffee and atmosphere! The staff was very friendly and the pastries were delicious.',
+      },
+    ],
+  },
+};
+
+// Keep this as a fallback if needed for other parts of the app
+final Map<int, Map<String, dynamic>> products = {
+  // Empty or with minimal data if needed
+};
+
+/* 
+1: {
     'storeName': 'Downtown Coffee',
     'category': 'Coffee Shop',
     'address': '123 Main St, New York, NY 10001',
@@ -132,9 +345,4 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   },
-};
-
-// Keep this as a fallback if needed for other parts of the app
-final Map<int, Map<String, dynamic>> products = {
-  // Empty or with minimal data if needed
-};
+ */
