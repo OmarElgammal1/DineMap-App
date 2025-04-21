@@ -13,41 +13,26 @@ class HomeScreen extends StatelessWidget {
 
     return CustomScrollView(
       slivers: [
-        SliverAppBar(
-          floating: true,
-          pinned: false,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          flexibleSpace: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0),
-                color: Colors.grey[300],
-              ),
-              padding: EdgeInsets.all(10.0),
-              child: Row(
-                children: [
-                  Icon(Icons.search, color: Colors.grey[700]),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Search Stores',
-                    style: TextStyle(color: Colors.grey[700]),
-                  ),
-                ],
-              ),
+        SliverPadding(
+          padding: const EdgeInsets.only(top: 10.0),
+          sliver: SliverAppBar(
+            title: const Text(
+              'Store Finder',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
+            floating: true,
+            centerTitle: true,
           ),
-          expandedHeight: 80.0,
         ),
         SliverPadding(
-          padding: const EdgeInsets.all(13.0),
+          padding: const EdgeInsets.all(15.0),
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 10.0,
               mainAxisSpacing: 10.0,
-              childAspectRatio: 0.8,
+              childAspectRatio: 0.85,
             ),
             delegate: SliverChildBuilderDelegate((
               BuildContext context,
@@ -61,6 +46,7 @@ class HomeScreen extends StatelessWidget {
                 productName: store['storeName'],
                 imageUrl: store['imageUrl'],
                 price: store['distance'],
+                district: store['district'],
                 isFavorite: store['isFavorite'],
                 screenType: screenType,
                 onAddToCart: () {

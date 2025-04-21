@@ -3,10 +3,10 @@ import 'custom_widgets/product_card.dart';
 
 import 'models/data.dart';
 
-class WishlistScreen extends StatelessWidget {
+class FavoritesScreen extends StatelessWidget {
   final String screenType;
 
-  WishlistScreen({required this.screenType});
+  FavoritesScreen({required this.screenType});
 
   @override
   Widget build(BuildContext context) {
@@ -15,37 +15,52 @@ class WishlistScreen extends StatelessWidget {
             .where((entry) => entry.value['isFavorite'] == true)
             .toList();
 
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: GridView.builder(
-        itemCount: storeList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10.0, // Add spacing between columns
-          mainAxisSpacing: 10.0, // Add spacing between rows
-          childAspectRatio:
-              0.75, // Adjust aspect ratio if needed (width / height)
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.only(top: 10.0),
+          sliver: SliverAppBar(
+            title: const Text(
+              'Favorites',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            floating: true,
+            centerTitle: true,
+          ),
         ),
-        itemBuilder: (context, index) {
-          var storeEntry = storeList[index];
-          var store = storeEntry.value;
+        SliverPadding(
+          padding: const EdgeInsets.all(15.0),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 10.0,
+              childAspectRatio: 0.85,
+            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              var storeEntry = storeList[index];
+              var store = storeEntry.value;
 
-          return ProductCard(
-            id: storeEntry.key,
-            productName: store['storeName'],
-            imageUrl: store['imageUrl'],
-            price: store['distance'],
-            isFavorite: store['isFavorite'],
-            screenType: screenType,
-            onAddToCart: () {
-              print('${store['storeName']} selected');
-            },
-            onRemoveFromCart: () {
-              print('${store['storeName']} removed from favorites');
-            },
-          );
-        },
-      ),
+              return ProductCard(
+                id: storeEntry.key,
+                productName: store['storeName'],
+                imageUrl: store['imageUrl'],
+                price: store['distance'],
+                district: store['district'],
+                isFavorite: store['isFavorite'],
+                screenType: screenType,
+                onAddToCart: () {
+                  print('${store['storeName']} selected');
+                },
+                onRemoveFromCart: () {
+                  print('${store['storeName']} removed from favorites');
+                },
+              );
+            }, childCount: storeList.length),
+          ),
+        ),
+      ],
     );
   }
 }
