@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../home_screen.dart';
 import '../wishlist_screen.dart';
 import 'nav_bar.dart';
-import '../custom_widgets/shop_app_bar.dart';
-
-
 
 class MainScreen extends StatefulWidget {
   @override
@@ -13,16 +10,14 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-  final List<String> _types = ["Home", "Wishlist"];
   final List<Widget> _screens = [
     HomeScreen(screenType: 'Home'),
-    WishlistScreen(screenType: 'Wishlist')
+    FavoritesScreen(screenType: 'Favorites'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ShopAppBar(title: _types[_currentIndex]),
       body: _screens[_currentIndex],
       bottomNavigationBar: ShopNavBar(
         currentIndex: _currentIndex,

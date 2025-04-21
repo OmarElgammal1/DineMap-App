@@ -12,14 +12,16 @@ class ShopNavBar extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: onTabSelected,
       items: [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
+        BottomNavigationBarItem(
+          icon: Icon(currentIndex == 0 ? Icons.home : Icons.home_outlined),
           label: 'Home',
         ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.favorite_outline),
-          label: 'Wishlist',
-        )
+        BottomNavigationBarItem(
+          icon: Icon(
+            currentIndex == 1 ? Icons.favorite : Icons.favorite_outline,
+          ),
+          label: 'Favorites',
+        ),
       ],
       selectedItemColor: Colors.purple,
       unselectedItemColor: Colors.grey,
