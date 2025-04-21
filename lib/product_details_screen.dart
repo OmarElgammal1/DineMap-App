@@ -2,27 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
+// import 'package:url_launcher/url_launcher.dart';
 import 'models/data.dart';
-import 'utils/openroute_service.dart';
+// import 'utils/openroute_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final int id;
+  // Pre-calculated distance from the store to the user's current location
+  final String distance;
 
-  ProductDetailScreen({required this.id});
+  ProductDetailScreen({required this.id, required this.distance});
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  bool _isLoading = false;
+  // bool _isLoading = false;
   Position? _currentPosition;
-  Map<String, String>? _directionsSummary;
-  List<Map<String, dynamic>>? _directionsSteps;
-  List<LatLng> _routePoints = [];
-  bool _showDirections = false;
-  MapController _mapController = MapController();
+  // Map<String, String>? _directionsSummary;
+  // List<Map<String, dynamic>>? _directionsSteps;
+  final List<LatLng> _routePoints = [];
+  // bool _showDirections = false;
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -76,7 +78,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  // Get directions from current location to store
+  /* // Get directions from current location to store
   Future<void> _getDirections(double storeLat, double storeLng) async {
     if (_currentPosition == null) {
       ScaffoldMessenger.of(
@@ -97,16 +99,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
       setState(() {
         _directionsSummary = OpenRouteService.getDirectionsSummary(response);
-        if (_currentPosition != null) {
-          final distanceInMeters = Geolocator.distanceBetween(
-            _currentPosition!.latitude,
-            _currentPosition!.longitude,
-            storeLat,
-            storeLng,
-          );
-          _directionsSummary!['distance'] = (distanceInMeters / 1000)
-              .toStringAsFixed(2);
-        }
         _directionsSteps = OpenRouteService.getDirectionsSteps(response);
         _routePoints = OpenRouteService.decodePolyline(response);
         _showDirections = true;
@@ -164,7 +156,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Error launching maps: $e')));
     }
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -187,12 +179,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Navigator.pop(context);
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -209,7 +195,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ),
             // Store map preview with route if available
-            Container(
+            SizedBox(
               height: 200,
               width: double.infinity,
               child: FlutterMap(
@@ -268,7 +254,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ],
               ),
             ),
-
+            // Store details
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 16.0,
@@ -335,104 +321,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Reviews',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Spacer(),
-                      TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.grey,
-                        ),
-                        child: Text('View all', style: TextStyle(fontSize: 16)),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://i.pravatar.cc/150?img=3',
-                        ),
-                        radius: 20,
-                      ),
-                      SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            store['reviews'][0]['name'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            store['reviews'][0]['date'],
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                      Spacer(),
-                      Row(
-                        children: List.generate(5, (starIndex) {
-                          if (starIndex <
-                              store['reviews'][0]['rating'].floor()) {
-                            return Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 16,
-                            );
-                          } else if (starIndex ==
-                                  store['reviews'][0]['rating'].floor() &&
-                              store['reviews'][0]['rating'] % 1 != 0) {
-                            return Icon(
-                              Icons.star_half,
-                              color: Colors.amber,
-                              size: 16,
-                            );
-                          } else {
-                            return Icon(
-                              Icons.star_border,
-                              color: Colors.amber,
-                              size: 16,
-                            );
-                          }
-                        }),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        '${store['reviews'][0]['rating']}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    store['reviews'][0]['comment'],
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
 
-            // Display directions information if available
+            /* // Display directions information if available
             if (_showDirections && _directionsSummary != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -550,7 +440,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ],
                 ),
               ),
+             */
 
+            // Distance, travel time, and button to get directions
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -560,7 +452,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${store['distance']} km away',
+                        "Distance: ${widget.distance} km away",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -572,7 +464,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ],
                   ),
-                  ElevatedButton.icon(
+                  /* ElevatedButton.icon(
                     onPressed:
                         _isLoading
                             ? null
@@ -599,7 +491,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       'Get Directions',
                       style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
-                  ),
+                  ), */
                 ],
               ),
             ),
