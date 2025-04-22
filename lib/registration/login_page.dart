@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'signup_screen.dart';
-import '../utils/main_screen.dart'; // Import shop main screen
-import '../utils/db.dart';
-import '../models/user.dart';
+import '../utils/main_screen.dart';
+import '../providers/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -17,10 +17,11 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -102,10 +103,10 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               const SizedBox(height: 24),
-              _isLoading
+              userProvider.isLoading
                   ? const Center(child: CircularProgressIndicator(color: Colors.purple))
                   : ElevatedButton(
-                onPressed: _submitForm,
+                onPressed: () => _submitForm(userProvider),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -119,6 +120,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 16),
+              // Display error message if any
+              if (userProvider.errorMessage != null)
+                Center(
+                  child: Text(
+                    userProvider.errorMessage!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -144,65 +153,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future<void> _submitForm() async {
+  Future<void> _submitForm(UserProvider userProvider) async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
       final email = _emailController.text;
       final password = _passwordController.text;
 
-      try {
-        // Initialize database and add test users if needed
-        await _initializeDatabase();
+      final success = await userProvider.login(email, password);
 
-        User? user = await DatabaseHelper.instance.login(email, password);
-
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (user != null) {
-          // Navigate to shop main screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => MainScreen()),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid email or password.'),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 3),
-            ),
-          );
-        }
-      } catch (e) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
+      if (success) {
+        // Navigate to shop main screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
         );
       }
-    }
-  }
-
-  // Initialize database with test users if needed
-  Future<void> _initializeDatabase() async {
-    try {
-      final users = await DatabaseHelper.instance.getAllUsers();
-      if (users.isEmpty) {
-        await DatabaseHelper.instance.addTestUsers();
-      }
-    } catch (e) {
-      print('Database initialization error: $e');
     }
   }
 }

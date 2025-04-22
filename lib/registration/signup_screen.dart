@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../utils/main_screen.dart'; // Import shop main screen
-import '../models/user.dart';
-import '../utils/db.dart';
+import 'package:provider/provider.dart';
+import '../utils/main_screen.dart';
+import '../providers/user_provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -19,10 +19,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Account'),
@@ -102,10 +103,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              _isLoading
+              userProvider.isLoading
                   ? const Center(child: CircularProgressIndicator(color: Colors.purple))
                   : ElevatedButton(
-                onPressed: _submitForm,
+                onPressed: () => _submitForm(userProvider),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -119,6 +120,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              // Display error message if any
+              if (userProvider.errorMessage != null)
+                Center(
+                  child: Text(
+                    userProvider.errorMessage!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
             ],
           ),
         ),
@@ -126,64 +135,19 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void _submitForm() async {
+  void _submitForm(UserProvider userProvider) async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      final name = _nameController.text;
+      final email = _emailController.text;
+      final password = _passwordController.text;
 
-      try {
-        // Check if user already exists
-        final existingUser = await DatabaseHelper.instance.login(
-          _emailController.text,
-          _passwordController.text,
-        );
+      final success = await userProvider.signup(name, email, password);
 
-        if (existingUser != null) {
-          setState(() {
-            _isLoading = false;
-          });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User already exists with this email'),
-              backgroundColor: Colors.red,
-            ),
-          );
-          return;
-        }
-
-        // Create new user
-        final newUser = User(
-          name: _nameController.text,
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-
-        // Insert into database
-        final userId = await DatabaseHelper.instance.insertUser(newUser);
-
-        setState(() {
-          _isLoading = false;
-        });
-
+      if (success) {
         // Navigate to shop main screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => MainScreen(),
-          ),
-        );
-      } catch (e) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create account: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
+          MaterialPageRoute(builder: (context) => MainScreen()),
         );
       }
     }
