@@ -16,6 +16,7 @@ class ProductCard extends StatefulWidget {
   final VoidCallback? onRemoveFromCart;
   final String? size;
   final int? ind;
+  final double? distance;
 
   ProductCard({
     required this.id,
@@ -29,6 +30,7 @@ class ProductCard extends StatefulWidget {
     this.onRemoveFromCart,
     this.size,
     this.ind,
+    this.distance,
   });
 
   @override
