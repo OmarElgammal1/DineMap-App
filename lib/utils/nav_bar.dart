@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/navigation_provider.dart';
 
 class ShopNavBar extends StatelessWidget {
   final int currentIndex;
