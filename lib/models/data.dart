@@ -54,7 +54,7 @@ final Map<int, Map<String, dynamic>> stores = {
         'A cozy dessert shop offering tasty cookies, crepe, cheesecake, ice cream and more.',
   },
   4: {
-    'storeName': 'Al Refaei Butcher and Hawawshi',
+    'storeName': 'Al Refaei Hawawshi',
     'category': 'Restaurant',
     'address':
         '87 El-Shaikh Rihan, As Saqayin, Abdeen, Cairo Governorate 4281023',
