@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'custom_widgets/product_card.dart';
-import 'models/data.dart';
+import 'providers/store_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   final String screenType;
@@ -9,7 +10,9 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var storeList = stores.entries.toList();
+    final storeProvider = Provider.of<StoreProvider>(context);
+    var allStores = storeProvider.allStores;
+    var storeList = allStores.entries.toList();
 
     return CustomScrollView(
       slivers: [
@@ -17,7 +20,7 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.only(top: 10.0),
           sliver: SliverAppBar(
             title: const Text(
-              'Store Finder',
+              'Favorites',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
@@ -34,25 +37,30 @@ class HomeScreen extends StatelessWidget {
               mainAxisSpacing: 10.0,
               childAspectRatio: 0.85,
             ),
-            delegate: SliverChildBuilderDelegate((
-              BuildContext context,
-              int index,
-            ) {
+            delegate: SliverChildBuilderDelegate((context, index) {
               var storeEntry = storeList[index];
               var store = storeEntry.value;
+              int id = storeEntry.key;
+
+              // Calculate distance dynamically
+              double storeLat = store['latitude'];
+              double storeLng = store['longitude'];
+              double distance = storeProvider.calculateDistance(storeLat, storeLng);
 
               return ProductCard(
-                id: storeEntry.key,
+                id: id,
                 productName: store['storeName'],
                 imageUrl: store['imageUrl'],
-                price: store['distance'],
+                price: distance, // Using dynamically calculated distance
                 district: store['district'],
-                isFavorite: store['isFavorite'],
+                isFavorite: storeProvider.isFavorite(id),
                 screenType: screenType,
                 onAddToCart: () {
                   print('${store['storeName']} selected');
                 },
                 onRemoveFromCart: () {
+                  // Toggle favorite using provider
+                  storeProvider.toggleFavorite(id);
                   print('${store['storeName']} removed from favorites');
                 },
               );
