@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-// import 'package:url_launcher/url_launcher.dart';
 import '../models/data.dart';
 import '../product_details_screen.dart';
 
@@ -55,42 +54,6 @@ class _ProductCardState extends State<ProductCard> {
     print(stores[widget.id]?['isFavorite']);
   }
 
-  // Launch maps with directions to store
-  /* Future<void> _openDirections() async {
-    final store = stores[widget.id];
-    if (store == null) return;
-
-    double lat = store['latitude'];
-    double lng = store['longitude'];
-
-    try {
-      // Get current location
-      Position position = await Geolocator.getCurrentPosition();
-
-      // Try to launch Google Maps first, then Apple Maps, then OSM
-      final Uri googleUrl = Uri.parse(
-        'https://www.google.com/maps/dir/?api=1&origin=${position.latitude},${position.longitude}&destination=$lat,$lng&travelmode=driving',
-      );
-      final Uri appleUrl = Uri.parse(
-        'https://maps.apple.com/?daddr=$lat,$lng&dirflg=d&t=m',
-      );
-      final Uri osmUrl = Uri.parse(
-        'https://www.openstreetmap.org/directions?engine=graphhopper_car&route=${position.latitude}%2C${position.longitude}%3B$lat%2C$lng',
-      );
-
-      if (await canLaunchUrl(googleUrl)) {
-        await launchUrl(googleUrl);
-      } else if (await canLaunchUrl(appleUrl)) {
-        await launchUrl(appleUrl);
-      } else if (await canLaunchUrl(osmUrl)) {
-        await launchUrl(osmUrl);
-      } else {
-        throw 'Could not launch maps';
-      }
-    } catch (e) {
-      print('Error opening directions: $e');
-    }
-  } */
 
   // Pre-calculate the distance to the store then navigate to ProductDetailScreen
   Future<void> navigateToProductDetail(
@@ -219,16 +182,14 @@ class _ProductCardState extends State<ProductCard> {
         // Navigate with distance calculation
         navigateToProductDetail(context, widget.id)
             .then((_) {
-              // Remove loading indicator when done
               loadingOverlay.remove();
             })
             .catchError((error) {
-              // Make sure to remove loading on error too
               loadingOverlay.remove();
             });
       },
       child: Card(
-        margin: EdgeInsets.all(4.0), // Adds margin around the card for spacing
+        margin: EdgeInsets.all(4.0),
         clipBehavior: Clip.antiAlias, // Clips the content to the card's shape
         elevation: 5,
         child: Column(
@@ -282,54 +243,6 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                     ],
                   ),
-                  // Row containing Favorite Icon and Location Icon (OLD)
-                  /* Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      // Favorite Icon
-                      Positioned(
-                        bottom: 8,
-                        right: 8,
-                        child: GestureDetector(
-                          onTap: toggleFavorite,
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.red[100],
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Icon(
-                              _isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: _isFavorite ? Colors.red : Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      // Location Icon
-                      Positioned(
-                        bottom: 8,
-                        right: 8,
-                        child: GestureDetector(
-                          onTap: _openDirections,
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.blue[100],
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Icon(
-                              Icons.directions,
-                              color: Colors.blue,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ), */
                 ],
               ),
             ),
