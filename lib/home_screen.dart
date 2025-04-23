@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'custom_widgets/product_card.dart';
+import 'custom_widgets/store_card.dart';
 import 'providers/store_provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -47,11 +47,11 @@ class HomeScreen extends StatelessWidget {
               double storeLng = store['longitude'];
               double distance = storeProvider.calculateDistance(storeLat, storeLng);
 
-              return ProductCard(
+              return StoreCard(
                 id: id,
                 productName: store['storeName'],
                 imageUrl: store['imageUrl'],
-                price: distance, // Using dynamically calculated distance
+                distance: distance, // Using dynamically calculated distance
                 district: store['district'],
                 isFavorite: storeProvider.isFavorite(id),
                 screenType: screenType,
