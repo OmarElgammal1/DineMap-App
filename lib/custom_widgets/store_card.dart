@@ -3,11 +3,11 @@ import 'package:geolocator/geolocator.dart';
 import '../models/data.dart';
 import '../product_details_screen.dart';
 
-class ProductCard extends StatefulWidget {
+class StoreCard extends StatefulWidget {
   final int id;
   final String productName;
   final String imageUrl;
-  final double price;
+  final double distance;
   final String district;
   final bool isFavorite;
   final String screenType;
@@ -15,13 +15,12 @@ class ProductCard extends StatefulWidget {
   final VoidCallback? onRemoveFromCart;
   final String? size;
   final int? ind;
-  final double? distance;
 
-  ProductCard({
+  StoreCard({
     required this.id,
     required this.productName,
     required this.imageUrl,
-    required this.price,
+    required this.distance,
     required this.district,
     this.isFavorite = false,
     required this.screenType,
@@ -29,14 +28,13 @@ class ProductCard extends StatefulWidget {
     this.onRemoveFromCart,
     this.size,
     this.ind,
-    this.distance,
   });
 
   @override
-  _ProductCardState createState() => _ProductCardState();
+  _StoreCardState createState() => _StoreCardState();
 }
 
-class _ProductCardState extends State<ProductCard> {
+class _StoreCardState extends State<StoreCard> {
   late bool _isFavorite;
 
   @override
