@@ -33,7 +33,6 @@ class User {
     );
   }
 
-  // Optional: Add copyWith method for updates
   User copyWith({
     int? id,
     String? name,

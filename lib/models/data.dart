@@ -1,4 +1,3 @@
-// Sample store data to replace product data
 final Map<int, Map<String, dynamic>> stores = {
   1: {
     'storeName': 'El Dabbagh',
@@ -144,10 +143,6 @@ final Map<int, Map<String, dynamic>> stores = {
   },
 };
 
-// Keep this as a fallback if needed for other parts of the app
-final Map<int, Map<String, dynamic>> products = {
-  // Empty or with minimal data if needed
-};
 
 /* 
 1: {
