@@ -26,13 +26,39 @@ class HomeScreen extends StatelessWidget {
               SliverPadding(
                 padding: const EdgeInsets.only(top: 10.0),
                 sliver: SliverAppBar(
-                  title: const Text(
-                    'Stores',
+              title: Text(
+                'Welcome, ${Provider.of<UserProvider>(context).username} 👋',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
                   ),
                   floating: true,
                   centerTitle: true,
+              backgroundColor: Colors.transparent, // Optional: to make it blend
+              elevation: 0, // Optional: remove shadow
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 15.0,
+              vertical: 10.0,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: TextField(
+                enabled: false,
+                decoration: InputDecoration(
+                  hintText: 'Search Restaurants...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+              ),
                 ),
               ),
               SliverPadding(
