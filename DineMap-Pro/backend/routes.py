@@ -57,16 +57,6 @@ def signup():
 def get_user():
     users = User.query.all()
     return jsonify([user.to_dict() for user in users]), 200
-
-@app.route('/users', methods=['DELETE'])
-def delete_all_users():
-    try:
-        num_deleted = db.session.query(User).delete()
-        db.session.commit()
-        return jsonify({'message': f'Successfully deleted {num_deleted} users'}), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': 'Failed to delete users', 'details': str(e)}), 500
     
 
 @app.route('/login', methods=['POST'])
@@ -83,7 +73,7 @@ def login():
         return jsonify({'message': 'Login successful'}), 200
     else:
         return jsonify({'message': 'Invalid email or password'}), 401
-    
+
 
 @app.route('/restaurants', methods=['GET'])
 def get_restaurants():
@@ -109,29 +99,3 @@ def get_restaurants_by_product(product_id):
         return jsonify({'message': 'Product not found'}), 404
     restaurants = Restaurant.query.join(Product).filter(Product.id == product_id).all()
     return jsonify([restaurant.to_dict() for restaurant in restaurants])
-
-def get_location():
-    res = requests.get(f"http://ip-api.com/json/")
-    return res.json()["lon"], res.json()["lat"]
-
-def haversine(lon1, lat1, lon2, lat2):
-    # Convert decimal degrees to radians
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-
-    # Haversine formula
-    dlon = lon2 - lon1 
-    dlat = lat2 - lat1 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-    c = 2 * asin(sqrt(a)) 
-    r = 6371  # Radius of Earth in kilometers
-    return c * r
-
-@app.route('/restaurants/<int:restaurant_id>/distance', methods=['GET'])
-def get_distance(restaurant_id):
-    restaurant = Restaurant.query.get(restaurant_id)
-    if not restaurant:
-        return jsonify({'message': 'Restaurant not found'}), 404
-    lon1, lat1 = get_location()
-    lon2, lat2 = restaurant.longitude, restaurant.latitude
-    distance = haversine(lon1, lat1, lon2, lat2)
-    return jsonify({'distance': f"{round(distance, 2)} km"})
