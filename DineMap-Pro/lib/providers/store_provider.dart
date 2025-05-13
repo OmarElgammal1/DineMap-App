@@ -7,34 +7,18 @@ class StoreProvider extends ChangeNotifier {
   Position? _currentPosition;
   Position? get currentPosition => _currentPosition;
 
-  // Favorite stores
-  final Map<int, bool> _favorites = {};
-
   // Get all stores
   Map<int, Map<String, dynamic>> get allStores => stores;
 
-  // Get favorite stores
-  Map<int, Map<String, dynamic>> get favoriteStores {
-    final result = <int, Map<String, dynamic>>{};
-    stores.forEach((key, value) {
-      if (_favorites[key] == true || value['isFavorite'] == true) {
-        result[key] = value;
-      }
-    });
-    return result;
-  }
-
-  // Check if a store is favorite
-  bool isFavorite(int id) {
-    return _favorites[id] == true || (stores[id]?['isFavorite'] == true);
-  }
-
-  // Toggle favorite status
-  void toggleFavorite(int id) {
-    if (stores.containsKey(id)) {
-      _favorites[id] = !(_favorites[id] ?? (stores[id]?['isFavorite'] ?? false));
-      notifyListeners();
+  // Get store products
+  List<Map<String, dynamic>> getStoreProducts(int storeId) {
+    final store = stores[storeId];
+    if (store != null && store['products'] != null) {
+      // Ensure that 'products' is treated as a List
+      // and that its elements are Map<String, dynamic>
+      return List<Map<String, dynamic>>.from(store['products'] as List);
     }
+    return []; // Return an empty list if no products or store found
   }
 
   // Get store by ID
