@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'signup_screen.dart';
-import '../utils/main_screen.dart';
+import '../home_screen.dart';
 import '../providers/user_provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
         // Navigate to shop main screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       }
     }

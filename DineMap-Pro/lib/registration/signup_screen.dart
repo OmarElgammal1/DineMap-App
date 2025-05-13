@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../utils/main_screen.dart';
+import '../home_screen.dart';
 import '../providers/user_provider.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -147,7 +147,7 @@ class _SignupScreenState extends State<SignupScreen> {
         // Navigate to shop main screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       }
     }
