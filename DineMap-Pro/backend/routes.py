@@ -1,8 +1,9 @@
-from flask import request, jsonify
+from flask import request, jsonify, Response
 from models import User, Restaurant, Product, app, db
 import requests
 from math import radians, cos, sin, asin, sqrt
 import re
+from difflib import SequenceMatcher
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -99,3 +100,28 @@ def get_restaurants_by_product(product_id):
         return jsonify({'message': 'Product not found'}), 404
     restaurants = Restaurant.query.join(Product).filter(Product.id == product_id).all()
     return jsonify([restaurant.to_dict() for restaurant in restaurants])
+
+@app.route('/search/products', methods=['GET'])
+def search_products():
+    query = request.args.get('q', '').strip().lower()
+    if not query:
+        return jsonify({'message': 'Missing search query'}), 400
+
+    products = Product.query.all()
+    matched_products = []
+    for product in products:
+        name = product.name.lower()
+        score = SequenceMatcher(None, query, name).ratio()
+        print(query, name, score)
+        if score > 0.5:
+            matched_products.append({
+                'product': product.to_dict(),
+                'matchScore': round(score, 2)
+            })
+
+    matched_products.sort(key=lambda x: x['matchScore'], reverse=True)
+
+    if len(matched_products) == 0:
+        return Response(status=204)
+    
+    return jsonify(matched_products), 200
