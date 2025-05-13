@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'registration/login_page.dart';
 import 'utils/db.dart';
-import 'providers/store_provider.dart';
-import 'providers/user_provider.dart';
-import 'providers/navigation_provider.dart';
+import 'cubits/store/store_cubit.dart';
+import 'cubits/user/user_cubit.dart';
+import 'cubits/navigation/navigation_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,11 +15,11 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => StoreProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        BlocProvider<StoreCubit>(create: (_) => StoreCubit()),
+        BlocProvider<UserCubit>(create: (_) => UserCubit()),
+        BlocProvider<NavigationCubit>(create: (_) => NavigationCubit()),
       ],
       child: MaterialApp(
         title: 'Store Finder',

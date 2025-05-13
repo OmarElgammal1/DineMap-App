@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../home_screen.dart';
 import '../favorites_screen.dart';
 import '../utils/nav_bar.dart';
-import '../providers/navigation_provider.dart';
+import '../cubits/navigation/navigation_cubit.dart';
+import '../cubits/navigation/navigation_state.dart';
 
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => NavigationProvider(),
-      child: Consumer<NavigationProvider>(
-        builder: (context, navigationProvider, _) {
-          final List<Widget> screens = [
-            HomeScreen(screenType: 'Home'),
-            FavoritesScreen(screenType: 'Favorites'),
-          ];
+    return BlocBuilder<NavigationCubit, NavigationState>(
+      builder: (context, state) {
+        final List<Widget> screens = [
+          HomeScreen(screenType: 'Home'),
+          FavoritesScreen(screenType: 'Favorites'),
+        ];
 
-          return Scaffold(
-            body: screens[navigationProvider.currentIndex],
-            bottomNavigationBar: ShopNavBar(
-              currentIndex: navigationProvider.currentIndex,
-              onTabSelected: (index) {
-                navigationProvider.navigateTo(index);
-              },
-            ),
-          );
-        },
-      ),
+        return Scaffold(
+          body: screens[state.currentIndex],
+          bottomNavigationBar: ShopNavBar(
+            currentIndex: state.currentIndex,
+            onTabSelected: (index) {
+              context.read<NavigationCubit>().navigateTo(index);
+            },
+          ),
+        );
+      },
     );
   }
 }

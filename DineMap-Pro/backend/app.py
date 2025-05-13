@@ -57,5 +57,5 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
 
 
-# curl -X POST http://localhost:5000/signup -H "Content-Type: application/json" -d "{\"name\":\"Omar\",\"gender\":\"shemale\",\"email\":\"omar@gmail.com\",\"level\":5,\"password\":\"securepassword123\", \"confirm_password\":\"securepassword123\"}"
+# curl -X POST http://localhost:5000/signup -H "Content-Type: application/json" -d "{\"name\":\"Omar\",\"gender\":\"male\",\"email\":\"omar@gmail.com\",\"level\":5,\"password\":\"securepassword123\", \"confirm_password\":\"securepassword123\"}"
 # curl -X GET http://localhost:5000/users
