@@ -1,27 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'custom_widgets/product_card.dart';
-import 'providers/store_provider.dart';
 
-class StoreScreen extends StatelessWidget {
-  final int storeId;
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'cubits/store/store_cubit.dart';
+import 'cubits/store/store_state.dart';
 
-  const StoreScreen({super.key, required this.storeId});
+class StoreScreen extends StatefulWidget {
+  final int id;
+  final String? distance;
+
+  StoreScreen({required this.id, this.distance});
+
+  @override
+  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<StoreScreen> {
+  final List<LatLng> _routePoints = [];
+  final MapController _mapController = MapController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Update current position when screen loads using the cubit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<StoreCubit>().updateCurrentPosition();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final storeProvider = Provider.of<StoreProvider>(context);
-    // storeProvider.getStoreProducts(storeId) returns List<Map<String, Object>> as per the error.
-    // We will cast it to List<Map<String, dynamic>> for easier handling.
-    List<dynamic> rawProducts = storeProvider.getStoreProducts(storeId) as List;
-    List<Map<String, dynamic>> productList =
-        rawProducts
-            .map((product) => Map<String, dynamic>.from(product as Map))
-            .toList();
+    return BlocBuilder<StoreCubit, StoreState>(
+      builder: (context, state) {
+        if (state is StoreError) {
+          return Scaffold(body: Center(child: Text(state.message)));
+        }
 
-    var store = storeProvider.getStoreById(storeId);
+        if (state is! StoresLoaded) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
 
-    return Scaffold(
+        final storesLoaded = state as StoresLoaded;
+        final storeCubit = context.read<StoreCubit>();
+        final store = storeCubit.getStoreById(widget.id);
+
+        if (store == null) {
+          return Scaffold(body: Center(child: Text('Store not found!')));
+        }
+
+        final double storeLat = store['latitude'];
+        final double storeLng = store['longitude'];
+
+        // Calculate distance using the cubit
+        final distance = storeCubit.calculateDistance(storeLat, storeLng);
+
+        return Scaffold(
+
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -36,50 +71,52 @@ class StoreScreen extends StatelessWidget {
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
                 store!['imageUrl'],
-                fit: BoxFit.cover,
-                width: double.infinity,
+
+                    fit: BoxFit.cover,
+                    width: double.infinity,
               ),
-            ),
-          ),
+                  ),
+                ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 16.0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    store['restaurantName'],
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 16.0,
                   ),
-                  SizedBox(height: 8),
-                  Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.location_on, color: Colors.grey),
-                      SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          store['address'],
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
-                        ),
+                      Text(
+                    store['restaurantName'],
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Description',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    store['description'],
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.grey),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              store['address'],
+                              style: TextStyle(color: Colors.grey, fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'Description',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        store['description'],
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
-                ],
-              ),
-            ),
+                    ],
+                  ),
+                ),
+
           ),
           SliverPadding(
             padding: const EdgeInsets.all(15.0),
@@ -118,9 +155,12 @@ class StoreScreen extends StatelessWidget {
                         );
                       }, childCount: productList.length),
                     ),
+            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
+

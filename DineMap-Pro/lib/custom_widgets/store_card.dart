@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import '../models/data.dart';
 import '../store_screen.dart';
 
 class StoreCard extends StatelessWidget {
