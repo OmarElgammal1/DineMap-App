@@ -5,17 +5,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
 
-class ProductDetailScreen extends StatefulWidget {
+class StoreScreen extends StatefulWidget {
   final int id;
   final String? distance;
 
-  ProductDetailScreen({required this.id, this.distance});
+  StoreScreen({required this.id, this.distance});
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
+class _ProductDetailScreenState extends State<StoreScreen> {
   final List<LatLng> _routePoints = [];
   final MapController _mapController = MapController();
 
@@ -55,108 +55,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         final distance = storeCubit.calculateDistance(storeLat, storeLng);
 
         return Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 250.0,
+            floating: false,
+            pinned: true,
+            centerTitle: true,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            actions: [
-              // Favorite button using cubit
-              IconButton(
-                icon: Icon(
-                  storeCubit.isFavorite(widget.id)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: storeCubit.isFavorite(widget.id)
-                      ? Colors.red
-                      : Colors.grey,
-                ),
-                onPressed: () {
-                  storeCubit.toggleFavorite(widget.id);
-                },
-              ),
-            ],
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Store image
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  child: Image.network(
-                    store['imageUrl'],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.network(
+                store!['imageUrl'],
                     fit: BoxFit.cover,
                     width: double.infinity,
-                    height: 200,
+              ),
                   ),
                 ),
-                // Store map preview with route if available
-                SizedBox(
-                  height: 200,
-                  width: double.infinity,
-                  child: FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      center: LatLng(storeLat, storeLng),
-                      zoom: 15,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.example.app',
-                      ),
-                      // Draw the route line if available
-                      if (_routePoints.isNotEmpty)
-                        PolylineLayer(
-                          polylines: [
-                            Polyline(
-                              points: _routePoints,
-                              strokeWidth: 4.0,
-                              color: Colors.blue,
-                            ),
-                          ],
-                        ),
-                      MarkerLayer(
-                        markers: [
-                          // Store marker
-                          Marker(
-                            point: LatLng(storeLat, storeLng),
-                            width: 80,
-                            height: 80,
-                            child: Icon(
-                              Icons.location_on,
-                              color: Colors.red,
-                              size: 40,
-                            ),
-                          ),
-                          // Current location marker
-                          if (storesLoaded.currentPosition != null)
-                            Marker(
-                              point: LatLng(
-                                storesLoaded.currentPosition!.latitude,
-                                storesLoaded.currentPosition!.longitude,
-                              ),
-                              width: 80,
-                              height: 80,
-                              child: Icon(
-                                Icons.my_location,
-                                color: Colors.blue,
-                                size: 30,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Store details
-                Padding(
+          SliverToBoxAdapter(
+            child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
                     vertical: 16.0,
@@ -165,12 +84,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        store['category'],
-                        style: TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        store['storeName'],
+                    store['restaurantName'],
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                       ),
                       SizedBox(height: 8),
@@ -187,28 +101,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                       SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Icon(Icons.access_time, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(
-                            "Operating Hours: ${store['hours']}",
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Icon(Icons.phone, color: Colors.grey),
-                          SizedBox(width: 4),
-                          Text(
-                            store['phone'],
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16),
                       Text(
                         'Description',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -216,41 +108,51 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       SizedBox(height: 8),
                       Text(
                         store['description'],
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      SizedBox(height: 16),
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
                     ],
                   ),
                 ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(15.0),
+            sliver:
+                productList.isEmpty
+                    ? const SliverToBoxAdapter(
+                      child: Center(
+                        child: Text(
+                          'No products available',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    )
+                    : SliverGrid(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        childAspectRatio:
+                            0.7, // Adjusted for product cards which are usually taller
+                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        // productList is now List<Map<String, dynamic>>
+                        Map<String, dynamic> product = productList[index];
 
-                // Distance, travel time
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Distance: ${distance} km away",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          Text(
-                            'Estimated travel time: ${store['travelTime']} min',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-              ],
+                        int productID = product['productID'] as int;
+                        String productName = product['productName'] as String;
+                        String imageUrl = product['imageUrl'] as String;
+                        double price = product['price'];
+
+                        return ProductCard(
+                          id: productID,
+                          productName: productName,
+                          imageUrl: imageUrl,
+                          price: price,
+                        );
+                      }, childCount: productList.length),
+                    ),
             ),
+            ],
           ),
         );
       },

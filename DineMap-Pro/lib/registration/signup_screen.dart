@@ -35,7 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
             // Navigate to main screen on successful signup
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => MainScreen()),
+              MaterialPageRoute(builder: (context) => StoreScreen()),
             );
           }
         },
