@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'custom_widgets/store_card.dart';
 import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
 

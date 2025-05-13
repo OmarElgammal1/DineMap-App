@@ -8,9 +8,9 @@ import 'cubits/store/store_state.dart';
 
 class StoreScreen extends StatefulWidget {
   final int id;
-  final String? distance;
+  //final String? distance;
 
-  StoreScreen({required this.id, this.distance});
+  const StoreScreen({super.key, required this.id});
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
