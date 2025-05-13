@@ -11,6 +11,9 @@ class UserProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _currentUser != null;
+  
+  // Add a getter for username
+  String get username => _currentUser?.name ?? 'Guest';
 
   void setLoading(bool loading) {
     _isLoading = loading;

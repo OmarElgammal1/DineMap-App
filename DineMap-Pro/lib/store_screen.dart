@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,6 +56,7 @@ class _ProductDetailScreenState extends State<StoreScreen> {
         final distance = storeCubit.calculateDistance(storeLat, storeLng);
 
         return Scaffold(
+
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -69,6 +71,7 @@ class _ProductDetailScreenState extends State<StoreScreen> {
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
                 store!['imageUrl'],
+
                     fit: BoxFit.cover,
                     width: double.infinity,
               ),
@@ -113,6 +116,7 @@ class _ProductDetailScreenState extends State<StoreScreen> {
                     ],
                   ),
                 ),
+
           ),
           SliverPadding(
             padding: const EdgeInsets.all(15.0),
@@ -159,3 +163,4 @@ class _ProductDetailScreenState extends State<StoreScreen> {
     );
   }
 }
+

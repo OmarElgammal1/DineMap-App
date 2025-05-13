@@ -5,9 +5,7 @@ import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
 
 class HomeScreen extends StatelessWidget {
-  final String screenType;
-
-  HomeScreen({required this.screenType});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,21 +19,25 @@ class HomeScreen extends StatelessWidget {
           var allStores = state.allStores;
           var storeList = allStores.entries.toList();
 
+
           return CustomScrollView(
             slivers: [
               SliverPadding(
                 padding: const EdgeInsets.only(top: 10.0),
                 sliver: SliverAppBar(
-              title: Text(
-                'Welcome, ${Provider.of<UserProvider>(context).username} 👋',
+              title: Text( 'Welcome User',
+                // 'Welcome, ${Provider.of<UserProvider>(context).username} 👋',
                     textAlign: TextAlign.center,
+
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
+
                   ),
                   floating: true,
                   centerTitle: true,
+
               backgroundColor: Colors.transparent, // Optional: to make it blend
               elevation: 0, // Optional: remove shadow
             ),

@@ -1,5 +1,5 @@
-final Map<int, Map<String, dynamic>> stores = {
-  1: {
+[
+  {
     "restaurantID": 1,
     "restaurantName": "El Dabbagh",
     "address": "Mohyee Al Din Abd Al Al Hamid, Al Manteqah Ath Thamenah, Nasr City, Cairo Governorate 4441506",
@@ -32,7 +32,7 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   },
-  2: {
+  {
     "restaurantID": 2,
     "restaurantName": "Anas EL Demeshky",
     "address": "48 Abbas El-Akkad, Al Manteqah Al Oula, Nasr City, Cairo Governorate 4450320",
@@ -65,7 +65,7 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   },
-  3: {
+  {
     "restaurantID": 3,
     "restaurantName": "Süss",
     "address": "Salah El Din Abdel Karim, New Cairo 1, Cairo Governorate 4740601",
@@ -98,7 +98,7 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   },
-  4: {
+  {
     "restaurantID": 4,
     "restaurantName": "Al Refaei Hawawshi",
     "address": "87 El-Shaikh Rihan, As Saqayin, Abdeen, Cairo Governorate 4281023",
@@ -131,7 +131,7 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   },
-  5: {
+  {
     "restaurantID": 5,
     "restaurantName": "Kazaz",
     "address": "7 Al Bostan Al Seidi, Bab Al Louq, Abdeen, Cairo Governorate 4280124",
@@ -164,7 +164,7 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   },
-  6: {
+  {
     "restaurantID": 6,
     "restaurantName": "El Baraka Fried Chicken",
     "address": "14 Kafr Saqr, Camp Shizar, Bab Sharqi, Alexandria Governorate 5424071",
@@ -197,4 +197,4 @@ final Map<int, Map<String, dynamic>> stores = {
       }
     ]
   }
-};
+]

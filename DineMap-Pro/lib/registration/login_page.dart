@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../store_screen.dart';
 import 'signup_screen.dart';
+
 import '../utils/main_screen.dart';
 import '../cubits/user/user_cubit.dart';
 import '../cubits/user/user_state.dart';
+import '../home_screen.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -170,9 +173,9 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text;
       final password = _passwordController.text;
-
       // Use the cubit to login
       context.read<UserCubit>().login(email, password);
+
     }
   }
 }

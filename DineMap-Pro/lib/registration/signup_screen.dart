@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../utils/main_screen.dart';
 import '../cubits/user/user_cubit.dart';
 import '../cubits/user/user_state.dart';
+
+
+import '../home_screen.dart';
+
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -153,8 +158,10 @@ class _SignupScreenState extends State<SignupScreen> {
       final email = _emailController.text;
       final password = _passwordController.text;
 
+
       // Use the cubit to signup
       context.read<UserCubit>().signup(name, email, password);
+
     }
   }
 }
