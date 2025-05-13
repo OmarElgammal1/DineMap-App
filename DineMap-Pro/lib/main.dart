@@ -13,6 +13,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -22,9 +24,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<NavigationCubit>(create: (_) => NavigationCubit()),
       ],
       child: MaterialApp(
-        title: 'Store Finder',
+        title: 'Dine Map',
         theme: ThemeData(
-          primarySwatch: Colors.purple,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: LoginPage(),

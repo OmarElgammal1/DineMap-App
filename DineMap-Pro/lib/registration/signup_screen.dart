@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../utils/main_screen.dart';
 import '../cubits/user/user_cubit.dart';
 import '../cubits/user/user_state.dart';
-
-
 import '../home_screen.dart';
 
 
@@ -40,7 +36,7 @@ class _SignupScreenState extends State<SignupScreen> {
             // Navigate to main screen on successful signup
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => StoreScreen()),
+              MaterialPageRoute(builder: (context) => HomeScreen()),
             );
           }
         },

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../store_screen.dart';
-import 'signup_screen.dart';
-
-import '../utils/main_screen.dart';
 import '../cubits/user/user_cubit.dart';
 import '../cubits/user/user_state.dart';
 import '../home_screen.dart';
+import 'signup_screen.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -32,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
             // Navigate to main screen on successful login
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => StoreScreen()),
+              MaterialPageRoute(builder: (context) => HomeScreen()),
             );
           }
         },
