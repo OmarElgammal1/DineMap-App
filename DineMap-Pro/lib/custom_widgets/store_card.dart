@@ -21,9 +21,7 @@ class StoreCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => StoreScreen(storeId: id),
-          ),
+          MaterialPageRoute(builder: (context) => StoreScreen(storeID: id)),
         );
       },
       child: Card(

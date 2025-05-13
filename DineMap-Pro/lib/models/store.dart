@@ -1,5 +1,4 @@
 import 'product.dart';
-import '../models/data.dart'; // Assuming 'stores' (Map<int, Map<String, dynamic>>) is exported from here
 
 class Store {
   final String restaurantName;
@@ -46,18 +45,5 @@ class Store {
       description: json['description'] as String,
       products: productsList,
     );
-  }
-
-  /// Creates a [Store] instance from a store ID by looking up in the global [stores] data.
-  ///
-  /// Returns `null` if the store with the given [id] is not found.
-  /// Assumes that `data.dart` exports a `Map<int, Map<String, dynamic>> stores`.
-  static Store? getStoreById(int id) {
-    // 'stores' is assumed to be the Map<int, Map<String, dynamic>> from data.dart
-    final Map<String, dynamic>? storeJson = stores[id];
-    if (storeJson != null) {
-      return Store.fromJson(storeJson);
-    }
-    return null;
   }
 }

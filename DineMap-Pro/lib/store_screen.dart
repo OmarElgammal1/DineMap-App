@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+// import 'package:flutter_map/flutter_map.dart';
+// import 'package:latlong2/latlong.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
+import 'custom_widgets/product_card.dart';
 
 class StoreScreen extends StatefulWidget {
-  final int id;
+  final int storeID;
   //final String? distance;
 
-  const StoreScreen({super.key, required this.id});
+  const StoreScreen({super.key, required this.storeID});
 
   @override
-  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+  ProductDetailScreenState createState() => ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<StoreScreen> {
-  final List<LatLng> _routePoints = [];
-  final MapController _mapController = MapController();
+class ProductDetailScreenState extends State<StoreScreen> {
+  // final List<LatLng> _routePoints = [];
+  // final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -41,44 +41,42 @@ class _ProductDetailScreenState extends State<StoreScreen> {
           return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
-        final storesLoaded = state as StoresLoaded;
+        // final storesLoaded = state as StoresLoaded;
         final storeCubit = context.read<StoreCubit>();
-        final store = storeCubit.getStoreById(widget.id);
+        final store = storeCubit.getStoreById(widget.storeID);
+        final productList = storeCubit.getStoreProducts(widget.storeID);
 
         if (store == null) {
           return Scaffold(body: Center(child: Text('Store not found!')));
         }
 
-        final double storeLat = store['latitude'];
-        final double storeLng = store['longitude'];
-
         // Calculate distance using the cubit
-        final distance = storeCubit.calculateDistance(storeLat, storeLng);
+        // final double storeLat = store['latitude'];
+        // final double storeLng = store['longitude'];
+        // final distance = storeCubit.calculateDistance(storeLat, storeLng);
 
         return Scaffold(
-
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 250.0,
-            floating: false,
-            pinned: true,
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                store!['imageUrl'],
-
+          body: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 250.0,
+                floating: false,
+                pinned: true,
+                centerTitle: true,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Image.network(
+                    store['imageUrl'],
                     fit: BoxFit.cover,
                     width: double.infinity,
-              ),
                   ),
                 ),
-          SliverToBoxAdapter(
-            child: Padding(
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
                     vertical: 16.0,
@@ -87,8 +85,11 @@ class _ProductDetailScreenState extends State<StoreScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                    store['restaurantName'],
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                        store['restaurantName'],
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Row(
@@ -98,7 +99,10 @@ class _ProductDetailScreenState extends State<StoreScreen> {
                           Expanded(
                             child: Text(
                               store['address'],
-                              style: TextStyle(color: Colors.grey, fontSize: 16),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         ],
@@ -106,56 +110,63 @@ class _ProductDetailScreenState extends State<StoreScreen> {
                       SizedBox(height: 12),
                       Text(
                         'Description',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text(
                         store['description'],
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
                     ],
                   ),
                 ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.all(15.0),
+                sliver:
+                    productList.isEmpty
+                        ? const SliverToBoxAdapter(
+                          child: Center(
+                            child: Text(
+                              'No products available',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        )
+                        : SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 10.0,
+                                mainAxisSpacing: 10.0,
+                                childAspectRatio:
+                                    0.7, // Adjusted for product cards which are usually taller
+                              ),
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            // productList is now List<Map<String, dynamic>>
+                            Map<String, dynamic> product = productList[index];
 
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.all(15.0),
-            sliver:
-                productList.isEmpty
-                    ? const SliverToBoxAdapter(
-                      child: Center(
-                        child: Text(
-                          'No products available',
-                          style: TextStyle(fontSize: 18),
+                            int productID = product['productID'] as int;
+                            String productName =
+                                product['productName'] as String;
+                            String imageUrl = product['imageUrl'] as String;
+                            double price = product['price'];
+
+                            return ProductCard(
+                              id: productID,
+                              productName: productName,
+                              imageUrl: imageUrl,
+                              price: price,
+                            );
+                          }, childCount: productList.length),
                         ),
-                      ),
-                    )
-                    : SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10.0,
-                        mainAxisSpacing: 10.0,
-                        childAspectRatio:
-                            0.7, // Adjusted for product cards which are usually taller
-                      ),
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        // productList is now List<Map<String, dynamic>>
-                        Map<String, dynamic> product = productList[index];
-
-                        int productID = product['productID'] as int;
-                        String productName = product['productName'] as String;
-                        String imageUrl = product['imageUrl'] as String;
-                        double price = product['price'];
-
-                        return ProductCard(
-                          id: productID,
-                          productName: productName,
-                          imageUrl: imageUrl,
-                          price: price,
-                        );
-                      }, childCount: productList.length),
-                    ),
-            ),
+              ),
             ],
           ),
         );
@@ -163,4 +174,3 @@ class _ProductDetailScreenState extends State<StoreScreen> {
     );
   }
 }
-
