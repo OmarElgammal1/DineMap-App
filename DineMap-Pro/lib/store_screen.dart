@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
 import 'custom_widgets/product_card.dart';
+import 'models/store.dart'; // Import the Store model
+import 'models/product.dart'; // Import the Product model
 
 class StoreScreen extends StatefulWidget {
   final int storeID;
@@ -41,18 +43,17 @@ class ProductDetailScreenState extends State<StoreScreen> {
           return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
-        // final storesLoaded = state as StoresLoaded;
         final storeCubit = context.read<StoreCubit>();
-        final store = storeCubit.getStoreById(widget.storeID);
-        final productList = storeCubit.getStoreProducts(widget.storeID);
+        final Store? store = storeCubit.getStoreById(widget.storeID); // Explicitly type as Store?
+        final List<Product> productList = storeCubit.getStoreProducts(widget.storeID); // Explicitly type as List<Product>
 
         if (store == null) {
           return Scaffold(body: Center(child: Text('Store not found!')));
         }
 
         // Calculate distance using the cubit
-        // final double storeLat = store['latitude'];
-        // final double storeLng = store['longitude'];
+        // final double storeLat = store.latitude; // Access using dot notation
+        // final double storeLng = store.longitude; // Access using dot notation
         // final distance = storeCubit.calculateDistance(storeLat, storeLng);
 
         return Scaffold(
@@ -69,7 +70,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
                 ),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Image.network(
-                    store['imageUrl'],
+                    store.imageUrl, // Access using dot notation
                     fit: BoxFit.cover,
                     width: double.infinity,
                   ),
@@ -85,7 +86,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        store['restaurantName'],
+                        store.restaurantName, // Access using dot notation
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
@@ -98,7 +99,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
                           SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              store['address'],
+                              store.address, // Access using dot notation
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontSize: 16,
@@ -117,7 +118,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        store['description'],
+                        store.description, // Access using dot notation
                         style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     ],
@@ -127,45 +128,43 @@ class ProductDetailScreenState extends State<StoreScreen> {
               SliverPadding(
                 padding: const EdgeInsets.all(15.0),
                 sliver:
-                    productList.isEmpty
-                        ? const SliverToBoxAdapter(
-                          child: Center(
-                            child: Text(
-                              'No products available',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        )
-                        : SliverGrid(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 10.0,
-                                mainAxisSpacing: 10.0,
-                                childAspectRatio:
-                                    0.7, // Adjusted for product cards which are usually taller
-                              ),
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            // productList is now List<Map<String, dynamic>>
-                            Map<String, dynamic> product = productList[index];
+                productList.isEmpty
+                    ? const SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      'No products available',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                )
+                    : SliverGrid(
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    childAspectRatio:
+                    0.7, // Adjusted for product cards which are usually taller
+                  ),
+                  delegate: SliverChildBuilderDelegate((
+                      context,
+                      index,
+                      ) {
+                    Product product = productList[index]; // Access as Product object
 
-                            int productID = product['productID'] as int;
-                            String productName =
-                                product['productName'] as String;
-                            String imageUrl = product['imageUrl'] as String;
-                            double price = product['price'];
+                    int productID = product.restaurantID; // Access using dot notation
+                    String productName = product.productName; // Access using dot notation
+                    String imageUrl = product.imageUrl; // Access using dot notation
+                    double price = product.price; // Access using dot notation
 
-                            return ProductCard(
-                              id: productID,
-                              productName: productName,
-                              imageUrl: imageUrl,
-                              price: price,
-                            );
-                          }, childCount: productList.length),
-                        ),
+                    return ProductCard(
+                      id: productID,
+                      productName: productName,
+                      imageUrl: imageUrl,
+                      price: price,
+                    );
+                  }, childCount: productList.length),
+                ),
               ),
             ],
           ),

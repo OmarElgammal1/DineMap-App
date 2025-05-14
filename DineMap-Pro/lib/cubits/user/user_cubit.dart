@@ -1,30 +1,45 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../utils/db.dart';
-import '../../models/user.dart';
+// Remove: import '../../utils/db.dart'; // No longer using local DB for auth
+import '../../models/user.dart'; // Keep if you parse response into User model
 import 'user_state.dart';
+import '../../config/constants.dart'; // Your API base URL
 
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserInitial());
 
-  // Login user
   Future<bool> login(String email, String password) async {
     emit(UserLoading());
-
     try {
-      // Validate inputs
       if (email.isEmpty || password.isEmpty) {
         emit(UserError('Email and password cannot be empty'));
         return false;
       }
 
-      // Attempt login
-      User? user = await DatabaseHelper.instance.login(email, password);
+      final response = await http.post(
+        Uri.parse('$API_BASE_URL/login'), // Use your constant
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'email': email,
+          'password': password,
+        }),
+      );
 
-      if (user != null) {
-        emit(UserAuthenticated(user));
+      if (response.statusCode == 200) {
+        // Assuming your Flask login returns user data or a success message
+        // You might want to parse the user data from response.body
+        // For now, let's assume a simple User model for the frontend
+        // final responseData = jsonDecode(response.body);
+        // final user = User.fromJson(responseData['user']); // If backend sends user data
+        // For simplicity if backend only sends success:
+        emit(UserAuthenticated(User(id: 0, name: jsonDecode(response.body)['name'], email: email, password: ''))); // Adjust User model as needed
         return true;
       } else {
-        emit(UserError('Invalid email or password'));
+        final errorData = jsonDecode(response.body);
+        emit(UserError(errorData['message'] ?? 'Invalid email or password'));
         return false;
       }
     } catch (e) {
@@ -33,33 +48,41 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  // Sign up user
-  Future<bool> signup(String name, String email, String password) async {
+  Future<bool> signup(String name, String email, String password, String confirmPassword, {String? gender, int? level}) async { // Added confirmPassword and optional fields
     emit(UserLoading());
-
     try {
-      // Validate inputs
-      if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) { // Added confirmPassword check
         emit(UserError('All fields are required'));
         return false;
       }
+      if (password != confirmPassword) {
+        emit(UserError('Passwords do not match'));
+        return false;
+      }
 
-      // Create user object
-      User newUser = User(
-        name: name,
-        email: email,
-        password: password,
+      final response = await http.post(
+        Uri.parse('$API_BASE_URL/signup'), // Use your constant
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{ // Use dynamic for mixed types
+          'name': name,
+          'email': email,
+          'password': password,
+          'confirm_password': confirmPassword,
+          if (gender != null) 'gender': gender, // Add optional fields if provided
+          if (level != null) 'level': level,
+        }),
       );
 
-      // Save to database
-      int userId = await DatabaseHelper.instance.insertUser(newUser);
-      if (userId > 0) {
-        // Set ID and emit authenticated state
-        newUser.id = userId;
-        emit(UserAuthenticated(newUser));
+      if (response.statusCode == 201) { // Flask returns 201 for successful creation
+        // final responseData = jsonDecode(response.body);
+        // You might want to log the user in directly or navigate to login
+        emit(UserAuthenticated(User(id:0, name: name, email: email, password: ''))); // Adjust as needed
         return true;
       } else {
-        emit(UserError('Failed to create account'));
+        final errorData = jsonDecode(response.body);
+        emit(UserError(errorData['message'] ?? 'Failed to create account'));
         return false;
       }
     } catch (e) {
@@ -68,7 +91,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  // Logout user
+  // Logout user (remains the same if it just clears local state)
   void logout() {
     emit(UserInitial());
   }

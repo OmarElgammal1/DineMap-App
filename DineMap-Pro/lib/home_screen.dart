@@ -4,6 +4,7 @@ import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
 import 'cubits/user/user_cubit.dart';
 import 'cubits/user/user_state.dart';
+import 'models/store.dart';
 import 'custom_widgets/store_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,13 +14,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<StoreCubit, StoreState>(
       builder: (context, state) {
-        if (state is StoreInitial) {
-          return Center(child: CircularProgressIndicator());
+        if (state is StoreInitial || state is StoreLoading) { // Handle loading state
+          return const Center(child: CircularProgressIndicator());
         } else if (state is StoreError) {
           return Center(child: Text('Error: ${state.message}'));
         } else if (state is StoresLoaded) {
-          var allStores = state.allStores;
-          var storeList = allStores.entries.toList();
+          // state.allStores is now Map<int, Store>
+          var storeList = state.allStores.values.toList(); // Get list of Store objects
 
           return Scaffold(
             body: CustomScrollView(
@@ -29,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                   sliver: SliverAppBar(
                     title: BlocBuilder<UserCubit, UserState>(
                       builder: (context, userState) {
-                        String username = 'User'; // Default username as a fallback
+                        String username = 'User';
                         if (userState is UserAuthenticated) {
                           username = userState.user.name;
                         }
@@ -56,10 +57,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                   sliver: SliverToBoxAdapter(
                     child: TextField(
-                      enabled: false,
+                      enabled: false, // Consider enabling this for actual search functionality
                       decoration: InputDecoration(
                         hintText: 'Search Restaurants...',
-                        prefixIcon: Icon(Icons.search),
+                        prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25.0),
                           borderSide: BorderSide.none,
@@ -73,37 +74,42 @@ class HomeScreen extends StatelessWidget {
                 SliverPadding(
                   padding: const EdgeInsets.all(15.0),
                   sliver: SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 10.0,
                       mainAxisSpacing: 10.0,
                       childAspectRatio: 0.85,
                     ),
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      var storeEntry = storeList[index];
-                      var store = storeEntry.value;
-                      int id = storeEntry.key;
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        Store store = storeList[index]; // store is now a Store object
 
-                      // // Calculate distance dynamically
-                      // double storeLat = store['latitude'];
-                      // double storeLng = store['longitude'];
-                      // double distance = context.read<StoreCubit>().calculateDistance(storeLat, storeLng);
+                        // The commented-out distance calculation can be re-enabled if needed:
+                        // double distance = 0.0;
+                        // if (state.currentPosition != null && store.latitude != null && store.longitude != null) {
+                        //   distance = context.read<StoreCubit>().calculateDistance(store.latitude, store.longitude);
+                        // }
+                        // You could then pass `distance` to StoreCard if it's designed to display it.
 
-                      return StoreCard(
-                        id: id,
-                        storeName: store['restaurantName'],
-                        imageUrl: store['imageUrl'],
-                        district: store['district'],
-                      );
-                    }, childCount: storeList.length),
+                        return StoreCard(
+                          // Ensure StoreCard constructor matches these parameters
+                          // and that Store object has `restaurantID` or adapt as needed.
+                          id: store.restaurantID, // Assuming Store has restaurantID
+                          storeName: store.restaurantName,
+                          imageUrl: store.imageUrl,
+                          district: store.district,
+                          // Add other parameters like distance if you implement it
+                        );
+                      },
+                      childCount: storeList.length,
+                    ),
                   ),
                 ),
               ],
             ),
           );
         }
-
-        return SizedBox(); // Fallback
+        return const SizedBox.shrink(); // Fallback, should ideally not be reached if states are handled
       },
     );
   }

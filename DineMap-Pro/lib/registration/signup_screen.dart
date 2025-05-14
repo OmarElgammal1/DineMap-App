@@ -153,10 +153,11 @@ class _SignupScreenState extends State<SignupScreen> {
       final name = _nameController.text;
       final email = _emailController.text;
       final password = _passwordController.text;
+      final confirm_password = _confirmPasswordController.text;
 
 
       // Use the cubit to signup
-      context.read<UserCubit>().signup(name, email, password);
+      context.read<UserCubit>().signup(name, email, password, confirm_password);
 
     }
   }

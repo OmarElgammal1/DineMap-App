@@ -1,13 +1,15 @@
+import '../../models/store.dart'; // Import your Store model
+import 'package:geolocator/geolocator.dart'; // Assuming Position is used
+
 abstract class StoreState {}
 
-// Initial state
 class StoreInitial extends StoreState {}
+class StoreLoading extends StoreState {} // Added for better UI feedback
 
-// Loaded state with stores data
 class StoresLoaded extends StoreState {
-  final Map<int, Map<String, dynamic>> allStores;
-  final Map<int, Map<String, dynamic>> favoriteStores;
-  final dynamic currentPosition;
+  final Map<int, Store> allStores; // Use Store model
+  final Map<int, Store> favoriteStores; // Use Store model
+  final Position? currentPosition; // Explicitly type currentPosition
 
   StoresLoaded({
     required this.allStores,
@@ -16,9 +18,7 @@ class StoresLoaded extends StoreState {
   });
 }
 
-// Error state
 class StoreError extends StoreState {
   final String message;
-
   StoreError(this.message);
 }
