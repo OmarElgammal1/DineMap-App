@@ -6,7 +6,7 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         if not Restaurant.query.first():
-            with open('C:\\Users\\Administrator\\Documents\\GitHub\\DineMap-App\\DineMap-Pro\\backend\\data.json', 'r', encoding='utf-8') as f:
+            with open('data.json', 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
             for entry in data:
