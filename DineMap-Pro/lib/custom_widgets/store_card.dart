@@ -6,6 +6,7 @@ class StoreCard extends StatelessWidget {
   final String storeName;
   final String imageUrl;
   final String district;
+  final double distance;
 
   const StoreCard({
     super.key,
@@ -13,6 +14,7 @@ class StoreCard extends StatelessWidget {
     required this.storeName,
     required this.imageUrl,
     required this.district,
+    required this.distance,
   });
 
   @override
