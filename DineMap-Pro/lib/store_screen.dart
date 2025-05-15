@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_map/flutter_map.dart';
-// import 'package:latlong2/latlong.dart';
+// import 'package:flutter_map/flutter_map.dart'; // Keep if using flutter_map in this screen
+// import 'package:latlong2/latlong.dart'; // Keep if using flutter_map in this screen
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/store/store_cubit.dart';
 import 'cubits/store/store_state.dart';
@@ -26,6 +26,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
   void initState() {
     super.initState();
     // Update current position when screen loads using the cubit
+    // This ensures the distance is calculated correctly on this screen
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<StoreCubit>().updateCurrentPosition();
     });
@@ -39,22 +40,32 @@ class ProductDetailScreenState extends State<StoreScreen> {
           return Scaffold(body: Center(child: Text(state.message)));
         }
 
-        if (state is! StoresLoaded) {
-          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        // StoreScreen needs access to the loaded data to find the specific store.
+        // It should work with either StoresLoaded or StoreSearchResultsLoaded
+        // because getStoreById now uses _allStores which holds all data.
+        if (state is! StoresLoaded && state is! StoreSearchResultsLoaded && state is! StoreSearchEmpty) {
+             // Show loading if data is not in a loaded state yet.
+             // If it's loading or initial, show progress.
+             return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
         final storeCubit = context.read<StoreCubit>();
-        final Store? store = storeCubit.getStoreById(widget.storeID); // Explicitly type as Store?
-        final List<Product> productList = storeCubit.getStoreProducts(widget.storeID); // Explicitly type as List<Product>
+        // getStoreById now works with the full list (_allStores) regardless of the state type
+        final Store? store = storeCubit.getStoreById(widget.storeID);
+        // getStoreProducts also uses getStoreById which uses _allStores
+        final List<Product> productList = storeCubit.getStoreProducts(widget.storeID);
 
         if (store == null) {
+          // This could happen if the storeID is invalid or _allStores is empty
+          // This state should ideally not be reached if the navigation was based on existing store data
           return Scaffold(body: Center(child: Text('Store not found!')));
         }
 
         // Calculate distance using the cubit
-        // final double storeLat = store.latitude; // Access using dot notation
-        // final double storeLng = store.longitude; // Access using dot notation
-        // final distance = storeCubit.calculateDistance(storeLat, storeLng);
+        final double storeLat = store.latitude; // Access using dot notation
+        final double storeLng = store.longitude; // Access using dot notation
+        final distance = storeCubit.calculateDistance(storeLat, storeLng);
+
 
         return Scaffold(
           body: CustomScrollView(
@@ -66,6 +77,8 @@ class ProductDetailScreenState extends State<StoreScreen> {
                 centerTitle: true,
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
+                  // When navigating back, no specific action needed in cubit
+                  // as the state is already managed correctly.
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 flexibleSpace: FlexibleSpaceBar(
@@ -106,6 +119,14 @@ class ProductDetailScreenState extends State<StoreScreen> {
                               ),
                             ),
                           ),
+                          SizedBox(width: 8),
+                           Text(
+                            '${distance.toStringAsFixed(1)} km', // Display calculated distance
+                             style: TextStyle(
+                               color: Colors.grey,
+                               fontSize: 16,
+                             ),
+                           ),
                         ],
                       ),
                       SizedBox(height: 12),
@@ -117,8 +138,9 @@ class ProductDetailScreenState extends State<StoreScreen> {
                         ),
                       ),
                       SizedBox(height: 8),
+                       // Assuming your Store model has a description field
                       Text(
-                        store.description, // Access using dot notation
+                        store.description ?? 'No description available.', // Access using dot notation
                         style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     ],
@@ -152,10 +174,10 @@ class ProductDetailScreenState extends State<StoreScreen> {
                       ) {
                     Product product = productList[index]; // Access as Product object
 
-                    int productID = product.restaurantID; // Access using dot notation
-                    String productName = product.productName; // Access using dot notation
-                    String imageUrl = product.imageUrl; // Access using dot notation
-                    double price = product.price; // Access using dot notation
+                    int productID = product.restaurantID; // Corrected to use product.id
+                    String productName = product.productName; // Corrected to use product.name
+                    String imageUrl = product.imageUrl; // Corrected to use product.image_url
+                    double price = product.price; // Corrected to use product.price
 
                     return ProductCard(
                       id: productID,
