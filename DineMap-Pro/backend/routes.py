@@ -125,3 +125,24 @@ def search_products():
         return Response(status=204)
     
     return jsonify(matched_products), 200
+
+@app.route('/search/restaurants_by_product_name', methods=['GET'])
+def search_restaurants_by_product_name():
+    query = request.args.get('q', '').strip().lower()
+    if not query:
+        return jsonify({'message': 'Missing search query'}), 400
+
+    all_products = Product.query.all()
+    matched_restaurants = {} 
+
+    for product in all_products:
+        product_name = product.name.lower()
+        if SequenceMatcher(None, query, product_name).ratio() > 0.5:
+            restaurant = product.restaurant
+            if restaurant and restaurant.id not in matched_restaurants:
+                matched_restaurants[restaurant.id] = restaurant.to_dict()
+
+    if not matched_restaurants:
+        return jsonify({'message': 'No restaurants found offering a similar product'}), 404
+
+    return jsonify(list(matched_restaurants.values())), 200
