@@ -61,6 +61,46 @@ class StoreCubit extends Cubit<StoreState> {
     }
   }
 
+  // Method to search restaurants by product name
+  Future<void> searchRestaurantsByProduct(String productName) async {
+    if (productName.trim().isEmpty) {
+      // If search query is empty, show all stores again
+      fetchStoresFromApi();
+      return;
+    }
+    emit(StoreSearchLoading());
+    try {
+      final response = await http.get(Uri.parse('$API_BASE_URL/search/restaurants_by_product_name?q=${Uri.encodeComponent(productName.trim())}'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> restaurantsJson = jsonDecode(response.body);
+        if (restaurantsJson.isEmpty) {
+          emit(StoreSearchEmpty(currentPosition: _currentPosition));
+        } else {
+          List<Store> searchedStoresList = [];
+          for (var restaurantDataJson in restaurantsJson) {
+            Map<String, dynamic> restaurantMap = restaurantDataJson as Map<String, dynamic>;
+            Store store = Store.fromJson(restaurantMap);
+            searchedStoresList.add(store);
+          }
+          emit(StoreSearchResultsLoaded(
+            searchedRestaurants: searchedStoresList,
+            currentPosition: _currentPosition,
+          ));
+        }
+      } else if (response.statusCode == 404) {
+        // no restaurant found for the query
+        emit(StoreSearchEmpty(currentPosition: _currentPosition));
+      } else {
+        // Handle other error codes
+        final errorBody = jsonDecode(response.body);
+        final errorMessage = errorBody['message'] ?? "Failed to search restaurants";
+        emit(StoreError("Search failed: $errorMessage (Status: ${response.statusCode})"));
+      }
+    } catch (e) {
+      emit(StoreError("An error occurred during search: $e."));
+    }
+  }
   void toggleFavorite(int id) {
     if (_favoriteStores.containsKey(id)) {
       _favoriteStores.remove(id);
