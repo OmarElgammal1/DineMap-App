@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'registration/login_page.dart';
-import 'utils/db.dart';
 import 'cubits/store/store_cubit.dart';
 import 'cubits/user/user_cubit.dart';
-import 'cubits/navigation/navigation_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseHelper.initialize(); // Initialize database helper
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -21,7 +18,6 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<StoreCubit>(create: (_) => StoreCubit()),
         BlocProvider<UserCubit>(create: (_) => UserCubit()),
-        BlocProvider<NavigationCubit>(create: (_) => NavigationCubit()),
       ],
       child: MaterialApp(
         title: 'Dine Map',
@@ -30,7 +26,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: LoginPage(),
+        home: const LoginPage(),
         debugShowCheckedModeBanner: false,
       ),
     );
