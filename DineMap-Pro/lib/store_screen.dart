@@ -46,7 +46,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
         if (state is! StoresLoaded && state is! StoreSearchResultsLoaded && state is! StoreSearchEmpty) {
              // Show loading if data is not in a loaded state yet.
              // If it's loading or initial, show progress.
-             return Scaffold(body: Center(child: CircularProgressIndicator()));
+             return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
         final storeCubit = context.read<StoreCubit>();
@@ -58,7 +58,7 @@ class ProductDetailScreenState extends State<StoreScreen> {
         if (store == null) {
           // This could happen if the storeID is invalid or _allStores is empty
           // This state should ideally not be reached if the navigation was based on existing store data
-          return Scaffold(body: Center(child: Text('Store not found!')));
+          return const Scaffold(body: Center(child: Text('Store not found!')));
         }
 
         // Calculate distance using the cubit
@@ -100,48 +100,48 @@ class ProductDetailScreenState extends State<StoreScreen> {
                     children: [
                       Text(
                         store.restaurantName, // Access using dot notation
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.location_on, color: Colors.grey),
-                          SizedBox(width: 4),
+                          const Icon(Icons.location_on, color: Colors.grey),
+                          const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               store.address, // Access using dot notation
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.grey,
                                 fontSize: 16,
                               ),
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                            Text(
                             '${distance.toStringAsFixed(1)} km', // Display calculated distance
-                             style: TextStyle(
+                             style: const TextStyle(
                                color: Colors.grey,
                                fontSize: 16,
                              ),
                            ),
                         ],
                       ),
-                      SizedBox(height: 12),
-                      Text(
+                      const SizedBox(height: 12),
+                      const Text(
                         'Description',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                        // Assuming your Store model has a description field
                       Text(
-                        store.description ?? 'No description available.', // Access using dot notation
-                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                        store.description, // Access using dot notation
+                        style: const TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     ],
                   ),
