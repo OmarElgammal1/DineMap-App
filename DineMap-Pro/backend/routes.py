@@ -5,6 +5,8 @@ from math import radians, cos, sin, asin, sqrt
 import re
 from difflib import SequenceMatcher
 
+# Registration routes
+
 @app.route('/signup', methods=['POST'])
 def signup():
 
@@ -75,6 +77,7 @@ def login():
     else:
         return jsonify({'message': 'Invalid email or password'}), 401
 
+# Restaurants related routes
 
 @app.route('/restaurants', methods=['GET'])
 def get_restaurants():
@@ -88,6 +91,8 @@ def get_restaurant(restaurant_id):
         return jsonify({'message': 'Restaurant not found'}), 404
     return jsonify(restaurant.to_dict())
 
+# Product related routes
+
 @app.route('/products', methods=['GET'])
 def get_products():
     products = Product.query.all()
@@ -100,6 +105,8 @@ def get_restaurants_by_product(product_id):
         return jsonify({'message': 'Product not found'}), 404
     restaurants = Restaurant.query.join(Product).filter(Product.id == product_id).all()
     return jsonify([restaurant.to_dict() for restaurant in restaurants])
+
+# Search related routes
 
 @app.route('/search/products', methods=['GET'])
 def search_products():
@@ -146,3 +153,40 @@ def search_restaurants_by_product_name():
         return jsonify({'message': 'No restaurants found offering a similar product'}), 404
 
     return jsonify(list(matched_restaurants.values())), 200
+
+
+# Favorite related routes
+
+@app.route('/users/<int:user_id>/favorites', methods=['GET'])
+def get_user_favorites(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    favorites = [fav.restaurant.to_dict() for fav in user.favorites]
+    return jsonify(favorites), 200
+
+@app.route('/users/<int:user_id>/favorites', methods=['POST'])
+def add_favorite(user_id):
+    data = request.json or {}
+    restaurant_id = data.get('restaurant_id')
+    user = User.query.get(user_id)
+    restaurant = Restaurant.query.get(restaurant_id)
+    if not user or not restaurant:
+        return jsonify({'message': 'User or restaurant not found'}), 404
+    if user.is_favorite(restaurant):
+        return jsonify({'message': 'Already favorited'}), 400
+    user.favorite_restaurant(restaurant)
+    db.session.commit()
+    return jsonify({'message': 'Added to favorites'}), 201
+
+@app.route('/users/<int:user_id>/favorites/<int:restaurant_id>', methods=['DELETE'])
+def remove_favorite(user_id, restaurant_id):
+    user = User.query.get(user_id)
+    restaurant = Restaurant.query.get(restaurant_id)
+    if not user or not restaurant:
+        return jsonify({'message': 'User or restaurant not found'}), 404
+    if not user.is_favorite(restaurant):
+        return jsonify({'message': 'Not in favorites'}), 400
+    user.unfavorite_restaurant(restaurant)
+    db.session.commit()
+    return jsonify({'message': 'Removed from favorites'}), 200
