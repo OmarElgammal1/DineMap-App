@@ -10,7 +10,8 @@ import 'custom_widgets/store_card.dart';
 import 'map_screen.dart'; // Import the new map screen
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int? userId;
+  const HomeScreen({ Key? key, required this.userId }) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,6 +19,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // once the widget is up, tell StoreCubit who we are
+
+    context.read<StoreCubit>().setUserId(widget.userId);
+  }
 
   @override
   void dispose() {

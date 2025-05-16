@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_bloc/flutter_bloc.dart';
-// Remove: import '../../utils/db.dart'; // No longer using local DB for auth
 import '../../models/user.dart'; // Keep if you parse response into User model
 import 'user_state.dart';
 import '../../config/constants.dart'; // Your API base URL
@@ -29,13 +28,8 @@ class UserCubit extends Cubit<UserState> {
       );
 
       if (response.statusCode == 200) {
-        // Assuming your Flask login returns user data or a success message
-        // You might want to parse the user data from response.body
-        // For now, let's assume a simple User model for the frontend
-        // final responseData = jsonDecode(response.body);
-        // final user = User.fromJson(responseData['user']); // If backend sends user data
-        // For simplicity if backend only sends success:
-        emit(UserAuthenticated(User(id: 0, name: jsonDecode(response.body)['name'], email: email, password: ''))); // Adjust User model as needed
+
+        emit(UserAuthenticated(User(id: jsonDecode(response.body)['id'], name: jsonDecode(response.body)['name'], email: email, password: ''))); // Adjust User model as needed
         return true;
       } else {
         final errorData = jsonDecode(response.body);
@@ -78,7 +72,7 @@ class UserCubit extends Cubit<UserState> {
       if (response.statusCode == 201) { // Flask returns 201 for successful creation
         // final responseData = jsonDecode(response.body);
         // You might want to log the user in directly or navigate to login
-        emit(UserAuthenticated(User(id:0, name: name, email: email, password: ''))); // Adjust as needed
+        emit(UserAuthenticated(User(id:jsonDecode(response.body)['id'], name: name, email: email, password: ''))); // Adjust as needed
         return true;
       } else {
         final errorData = jsonDecode(response.body);

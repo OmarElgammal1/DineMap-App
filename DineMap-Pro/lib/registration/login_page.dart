@@ -27,9 +27,10 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           if (state is UserAuthenticated) {
             // Navigate to main screen on successful login
+            final userId = state.user.id;
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              MaterialPageRoute(builder: (context) => HomeScreen( userId: userId )),
             );
           }
         },

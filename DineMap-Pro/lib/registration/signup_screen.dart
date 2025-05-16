@@ -35,9 +35,10 @@ class _SignupScreenState extends State<SignupScreen> {
       body: BlocConsumer<UserCubit, UserState>(
         listener: (context, state) {
           if (state is UserAuthenticated) {
+            final userId = state.user.id;
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              MaterialPageRoute(builder: (context) => HomeScreen(userId: userId)),
             );
           }
         },
