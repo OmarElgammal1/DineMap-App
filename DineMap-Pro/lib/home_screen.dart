@@ -7,33 +7,23 @@ import 'cubits/user/user_cubit.dart';
 import 'cubits/user/user_state.dart';
 import 'models/store.dart';
 import 'custom_widgets/store_card.dart';
-import 'map_screen.dart'; // Import the new map screen
 import 'favorites_screen.dart'; // Import the new favorites screen
-
+import 'search_screen.dart'; // Import the new search screen
 
 class HomeScreen extends StatefulWidget {
   final int? userId;
-  const HomeScreen({ Key? key, required this.userId }) : super(key: key);
+  const HomeScreen({super.key, required this.userId});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    // once the widget is up, tell StoreCubit who we are
-
     context.read<StoreCubit>().setUserId(widget.userId);
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+    context.read<StoreCubit>().fetchStoresFromApi();
   }
 
   @override
@@ -43,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, state) {
           List<Widget> slivers = [];
 
-          // AppBar and Search Bar (always present)
+          // AppBar and Search Button (always present)
           slivers.add(
             SliverPadding(
               padding: const EdgeInsets.only(top: 0.0),
@@ -67,11 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 floating: true, // App bar floats
                 pinned: true, // Search bar stays pinned
                 centerTitle: true,
-                backgroundColor:
-                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
                 elevation: 0.5,
-                // In HomeScreen.dart's SliverAppBar actions
-                // In HomeScreen.dart's SliverAppBar actions
                 actions: [
                   BlocBuilder<StoreCubit, StoreState>(
                     builder: (context, storeState) {
@@ -79,47 +65,57 @@ class _HomeScreenState extends State<HomeScreen> {
                       bool hasFavorites = storeCubit.favoriteStores.isNotEmpty;
                       int favoriteCount = storeCubit.favoriteStores.length;
 
-                      // Define colors for clarity
-                      final Color activeColor = Colors.redAccent; // Or Colors.red[700] for a deeper red
-                      final Color inactiveColor = Colors.grey[700]!; // A clear inactive color
-                      final Color activeIconTextColor = Colors.white;
-                      final Color inactiveIconTextColor = inactiveColor; // Icon color same as text for inactive
+                      const Color activeColor = Colors.redAccent;
+                      final Color inactiveColor = Colors.grey[700]!;
+                      const Color activeIconTextColor = Colors.white;
+                      final Color inactiveIconTextColor = inactiveColor;
                       final Color inactiveBackgroundColor = Colors.grey[200]!;
 
                       return Padding(
-                        // This padding is for the chip within the AppBar's actions list
-                        padding: const EdgeInsets.only(right: 12.0, top: 8.0, bottom: 8.0), // Adjusted for centering
+                        padding: const EdgeInsets.only(
+                            right: 12.0,
+                            top: 8.0,
+                            bottom: 8.0), // Adjusted for centering
                         child: ActionChip(
-                          // elevation: hasFavorites ? 2.0 : 0.5, // Subtle shadow for active state
-                          // visualDensity: VisualDensity.compact, // Tighter packing if needed
-                          backgroundColor: hasFavorites ? activeColor : inactiveBackgroundColor,
+                          backgroundColor: hasFavorites
+                              ? activeColor
+                              : inactiveBackgroundColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0), // Standard pill shape
-                            // side: BorderSide( // Optional border for inactive state
-                            //   color: hasFavorites ? Colors.transparent : Colors.grey[400]!,
-                            //   width: 1,
-                            // ),
+                            borderRadius: BorderRadius.circular(20.0),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0), // Overall padding for the chip
-                          labelPadding: EdgeInsets.only(left: favoriteCount > 0 || !hasFavorites ? 4.0 : 0), // Reduce left padding if only showing icon
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 6.0),
+                          labelPadding: EdgeInsets.only(
+                              left:
+                                  favoriteCount > 0 || !hasFavorites ? 4.0 : 0),
                           avatar: Icon(
-                            hasFavorites ? Icons.favorite : Icons.favorite_border,
-                            color: hasFavorites ? activeIconTextColor : inactiveIconTextColor,
-                            size: 18, // Slightly larger icon
+                            hasFavorites
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: hasFavorites
+                                ? activeIconTextColor
+                                : inactiveIconTextColor,
+                            size: 18,
                           ),
                           label: Text(
-                            // Only show count if > 0, otherwise, maybe no text or just a very short one if needed
-                            favoriteCount > 0 ? '$favoriteCount' : (hasFavorites ? '' : 'Favorites'),
+                            favoriteCount > 0
+                                ? '$favoriteCount'
+                                : (hasFavorites ? '' : 'Favorites'),
                             style: TextStyle(
-                              color: hasFavorites ? activeIconTextColor : inactiveIconTextColor,
-                              fontWeight: hasFavorites ? FontWeight.bold : FontWeight.normal,
+                              color: hasFavorites
+                                  ? activeIconTextColor
+                                  : inactiveIconTextColor,
+                              fontWeight: hasFavorites
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                               fontSize: 13,
                             ),
                           ),
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+                              MaterialPageRoute(
+                                  builder: (_) => const FavoritesScreen()),
                             );
                           },
                           tooltip: 'My Favorites',
@@ -129,49 +125,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
                 bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(
-                      kToolbarHeight + 10), // Space for TextField
+                  preferredSize: const Size.fromHeight(kToolbarHeight + 10),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0, vertical: 5.0),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search Products in Restaurants...',
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: _searchController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  // Fetch all stores again
-                                  context
-                                      .read<StoreCubit>()
-                                      .fetchStoresFromApi();
-                                  // Optionally, unfocus the TextField
-                                  FocusScope.of(context).unfocus();
-                                },
-                              )
-                            : null,
-                        border: OutlineInputBorder(
+                        horizontal: 15.0, vertical: 8.0),
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.search),
+                      label: const Text('Search Products in Restaurants...'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25.0),
-                          borderSide: BorderSide.none,
                         ),
-                        filled: true,
-                        fillColor: Colors.grey[200],
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       ),
-                      onSubmitted: (String query) {
-                        if (query.trim().isNotEmpty) {
-                          context
-                              .read<StoreCubit>()
-                              .searchRestaurantsByProduct(query);
-                        } else {
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SearchScreen()),
+                        );
+                        if (mounted) {
                           context.read<StoreCubit>().fetchStoresFromApi();
                         }
-                      },
-                      onChanged: (String query) {
-                        // Rebuild to show/hide clear button
-                        setState(() {});
                       },
                     ),
                   ),
@@ -182,20 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Content based on state
           if (state is StoreInitial || state is StoreLoading) {
+            // Search empty on SearchScreen
             slivers.add(const SliverFillRemaining(
                 child: Center(child: CircularProgressIndicator())));
-          } else if (state is StoreSearchLoading) {
-            slivers.add(const SliverFillRemaining(
-                child: Center(
-                    child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text("Searching for products...",
-                    style: TextStyle(fontSize: 16)),
-              ],
-            ))));
           } else if (state is StoreError) {
             slivers.add(SliverFillRemaining(
                 child: Center(
@@ -209,54 +175,17 @@ class _HomeScreenState extends State<HomeScreen> {
             var storeList = state.allStores.values.toList();
             if (storeList.isEmpty) {
               slivers.add(SliverFillRemaining(
-                  child:
-                      _buildNoResultsView('No stores available right now.')));
+                  child: _buildNoResultsView(
+                      'No stores available right now. Tap search to find products.')));
             } else {
               slivers
                   .add(_buildStoreGridSliver(storeList, state.currentPosition));
             }
-          } else if (state is StoreSearchResultsLoaded) {
-            // Add "View on Map" button if results exist
-            if (state.searchedRestaurants.isNotEmpty) {
-              slivers.add(SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0, vertical: 10.0),
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.map_outlined),
-                    label: Text(
-                        "View ${state.searchedRestaurants.length} Result(s) on Map"),
-                    style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        textStyle: const TextStyle(fontSize: 16)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => MapScreen(
-                            restaurants: state.searchedRestaurants,
-                            userCurrentPosition: state.currentPosition,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ));
-            }
-            // Then add the grid of search results
-            slivers.add(_buildStoreGridSliver(
-                state.searchedRestaurants, state.currentPosition));
-          } else if (state is StoreSearchEmpty) {
-            slivers.add(SliverFillRemaining(
-                child: _buildNoResultsView(
-                    "No restaurants found for your search.")));
           } else {
-            // Fallback for any other unhandled state
             slivers.add(const SliverFillRemaining(
                 child: Center(
                     child: Text(
-              'Welcome! Use the search bar to find products in restaurants.',
+              'Welcome! Discover stores or use search.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ))));
@@ -275,21 +204,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off_outlined, size: 70, color: Colors.grey[400]),
+            Icon(Icons.storefront_outlined, size: 70, color: Colors.grey[400]),
             const SizedBox(height: 20),
             Text(message,
                 style: TextStyle(fontSize: 18, color: Colors.grey[700]),
                 textAlign: TextAlign.center),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _searchController.clear();
-                context
-                    .read<StoreCubit>()
-                    .fetchStoresFromApi(); // Go back to all stores
-                FocusScope.of(context).unfocus();
+            ElevatedButton.icon(
+              icon: const Icon(Icons.search),
+              label: const Text("Search Products"),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                );
+                if (mounted) {
+                  context.read<StoreCubit>().fetchStoresFromApi();
+                }
               },
-              child: const Text("Clear Search & View All Stores"),
             )
           ],
         ),
@@ -301,27 +233,23 @@ class _HomeScreenState extends State<HomeScreen> {
       List<Store> storeList, Position? currentPosition) {
     if (storeList.isEmpty) {
       return SliverFillRemaining(
-        // If grid is empty, fill with a message
         child: _buildNoResultsView("No stores to display in this list."),
       );
     }
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-          15.0, 5.0, 15.0, 15.0), // Reduced top padding
+      padding: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 15.0),
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 12.0,
           mainAxisSpacing: 12.0,
-          childAspectRatio: 0.82, // Adjust for content
+          childAspectRatio: 0.85,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             Store store = storeList[index];
             double distance = 0.0;
             if (currentPosition != null) {
-              // Ensure calculateDistance is accessible or pass it down.
-              // For simplicity, assuming it's on the cubit.
               distance = context
                   .read<StoreCubit>()
                   .calculateDistance(store.latitude, store.longitude);
