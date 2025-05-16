@@ -53,7 +53,7 @@ def signup():
     )
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
+    return jsonify({'message': 'User created successfully', 'name': new_user.name , 'id': new_user.id}), 201
 
 
 @app.route('/users', methods=['GET'])
@@ -73,7 +73,7 @@ def login():
 
     user = User.query.filter_by(email=email).first()
     if user and user.password == password:
-        return jsonify({'message': 'Login successful', 'name': user.name}), 200
+        return jsonify({'message': 'Login successful', 'name': user.name , 'id': user.id}), 200
     else:
         return jsonify({'message': 'Invalid email or password'}), 401
 
