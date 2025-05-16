@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
 import 'api_config.dart'; // Import the API config file
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class OpenRouteService {
   // Using API key from the config file
@@ -44,15 +45,22 @@ class OpenRouteService {
     List<LatLng> points = [];
 
     try {
-      final features = response['features'] as List;
-      if (features.isEmpty) return points;
+      final routes = response['routes'];
+      if (routes == null || routes.isEmpty) {
+        print('No routes found.');
+        return points;
+      }
 
-      final geometry = features[0]['geometry'];
-      final coordinates = geometry['coordinates'] as List;
+      final encodedPolyline = routes[0]['geometry'];
+      if (encodedPolyline == null || encodedPolyline is! String) {
+        print('No encoded polyline found.');
+        return points;
+      }
 
-      for (final coord in coordinates) {
-        // OpenRouteService returns [longitude, latitude]
-        points.add(LatLng(coord[1], coord[0]));
+      final decodedPoints = PolylinePoints().decodePolyline(encodedPolyline);
+
+      for (final point in decodedPoints) {
+        points.add(LatLng(point.latitude, point.longitude));
       }
     } catch (e) {
       print('Error decoding polyline: $e');
@@ -60,6 +68,8 @@ class OpenRouteService {
 
     return points;
   }
+
+
 
   // Parse duration from response
   static String formatDuration(double seconds) {
@@ -84,56 +94,38 @@ class OpenRouteService {
   }
 
   // Get directions summary from the response
-  static Map<String, String> getDirectionsSummary(Map<String, dynamic> response) {
-    try {
-      final features = response['features'] as List;
-      if (features.isEmpty) return {};
+  static Map<String, dynamic> getDirectionsSummary(Map<String, dynamic> response) {
+    final summary = response['routes']?[0]?['summary'];
+    if (summary == null) return {'distance': '', 'duration': ''};
 
-      final properties = features[0]['properties'];
-      final segments = properties['segments'] as List;
-      if (segments.isEmpty) return {};
-
-      final summary = segments[0]['summary'];
-      final double distance = summary['distance'];
-      final double duration = summary['duration'];
-
-      return {
-        'distance': formatDistance(distance),
-        'duration': formatDuration(duration),
-      };
-    } catch (e) {
-      print('Error getting directions summary: $e');
-      return {};
-    }
+    return {
+      'distance': '${summary['distance']} m',
+      'duration': '${summary['duration']} sec',
+    };
   }
 
   // Extract steps from the response for turn-by-turn directions
   static List<Map<String, dynamic>> getDirectionsSteps(Map<String, dynamic> response) {
-    final List<Map<String, dynamic>> directionsSteps = [];
+    final routes = response['routes'];
+    if (routes == null || routes.isEmpty) return [];
 
-    try {
-      final features = response['features'] as List;
-      if (features.isEmpty) return directionsSteps;
+    final segments = routes[0]['segments'];
+    if (segments == null || segments.isEmpty) return [];
 
-      final properties = features[0]['properties'];
-      final segments = properties['segments'] as List;
-      if (segments.isEmpty) return directionsSteps;
-
-      for (final segment in segments) {
-        final steps = segment['steps'] as List;
+    List<Map<String, dynamic>> allSteps = [];
+    for (final segment in segments) {
+      final steps = segment['steps'] as List?;
+      if (steps != null) {
         for (final step in steps) {
-          directionsSteps.add({
-            'instruction': step['instruction'],
-            'distance': formatDistance(step['distance']),
-            'duration': formatDuration(step['duration']),
-            'type': step['type'],
+          allSteps.add({
+            'instruction': step['instruction'] ?? '',
+            'distance': '${step['distance']} m',
+            'duration': '${step['duration']} sec',
           });
         }
       }
-    } catch (e) {
-      print('Error getting directions steps: $e');
     }
 
-    return directionsSteps;
+    return allSteps;
   }
 }
