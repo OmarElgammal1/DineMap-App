@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart'; // For Position type
-import 'models/store.dart'; // Import your Store model
+import 'package:geolocator/geolocator.dart';
+import 'models/store.dart';
+import 'directions_screen.dart'; // Make sure this file exists and accepts start & end LatLng
+import 'cubits/store/store_cubit.dart';
 
 class MapScreen extends StatefulWidget {
   final List<Store> restaurants;
   final Position? userCurrentPosition;
 
   const MapScreen({
-    Key? key,
+    super.key,
     required this.restaurants,
     this.userCurrentPosition,
-  }) : super(key: key);
+  });
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -20,7 +23,8 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
-  List<Marker> _markers = [];
+  final List<Marker> _markers = [];
+  late final storeCubit = context.read<StoreCubit>();
   LatLng? _initialCameraPosition;
 
   @override
@@ -37,24 +41,17 @@ class _MapScreenState extends State<MapScreen> {
         widget.userCurrentPosition!.longitude,
       );
     } else if (widget.restaurants.isNotEmpty) {
-      // Center map on the first restaurant if user position is not available
       _initialCameraPosition = LatLng(
         widget.restaurants.first.latitude,
         widget.restaurants.first.longitude,
       );
     } else {
-      // Default position if no user location and no restaurants
-      _initialCameraPosition =
-          const LatLng(0, 0); // World view or a default city
+      _initialCameraPosition = const LatLng(0, 0);
     }
-
-    // You can use the MapController to move the camera after it's built if needed
-    // _mapController.move(_initialCameraPosition!, 12.0); // Example
   }
 
   void _setMarkers() {
     _markers.clear();
-    // Add marker for user's current location
     if (widget.userCurrentPosition != null) {
       _markers.add(
         Marker(
@@ -73,43 +70,101 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
 
-    // Add markers for each restaurant
     for (var restaurant in widget.restaurants) {
+      double distance = storeCubit.calculateDistance(restaurant.latitude, restaurant.longitude);
       _markers.add(
         Marker(
           width: 80.0,
-          height: 80.0,
+          height: 100.0,
           point: LatLng(restaurant.latitude, restaurant.longitude),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Optional: Display restaurant name or image above marker icon
-              // Container(
-              //   padding: EdgeInsets.all(4),
-              //   decoration: BoxDecoration(
-              //     color: Colors.white,
-              //     borderRadius: BorderRadius.circular(5),
-              //     boxShadow: [
-              //       BoxShadow(
-              //         color: Colors.black.withOpacity(0.2),
-              //         blurRadius: 2,
-              //         spreadRadius: 1,
-              //       ),
-              //     ],
-              //   ),
-              //   child: Text(restaurant.restaurantName, style: TextStyle(fontSize: 10)),
-              // ),
-              Icon(
-                Icons.restaurant_menu,
-                color: Colors.redAccent,
-                size: 40.0,
-              ),
-            ],
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                builder: (_) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          restaurant.restaurantName,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '$distance km',
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          icon: const Icon(Icons.directions),
+                          label: const Text("Get Directions"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            if (widget.userCurrentPosition == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Current location not available")),
+                              );
+                              return;
+                            }
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DirectionsScreen(
+                                  start: LatLng(
+                                    widget.userCurrentPosition!.latitude,
+                                    widget.userCurrentPosition!.longitude,
+                                  ),
+                                  end: LatLng(
+                                    restaurant.latitude,
+                                    restaurant.longitude,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 2,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    restaurant.restaurantName,
+                    style: const TextStyle(fontSize: 10),
+                  ),
+                ),
+                const Icon(
+                  Icons.restaurant_menu,
+                  color: Colors.redAccent,
+                  size: 40.0,
+                ),
+              ],
+            ),
           ),
-          // You can add a onTap callback here for marker tap events
-          // onTap: () {
-          //   // Show restaurant details, etc.
-          // },
         ),
       );
     }
@@ -117,13 +172,11 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine the center of the map. If user location is available, use it.
-    // Otherwise, try to center on the first restaurant, or a default location.
     final LatLng center = _initialCameraPosition ?? const LatLng(0, 0);
     final double zoom =
-        (widget.userCurrentPosition != null || widget.restaurants.isNotEmpty)
-            ? 12.0
-            : 2.0; // Adjust zoom based on data availability
+    (widget.userCurrentPosition != null || widget.restaurants.isNotEmpty)
+        ? 12.0
+        : 2.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -134,38 +187,17 @@ class _MapScreenState extends State<MapScreen> {
         options: MapOptions(
           initialCenter: center,
           initialZoom: zoom,
-          // You can add interactive flags to control map gestures
-          // interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
         ),
         children: [
-          // Tile Layer (e.g., OpenStreetMap)
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName:
-                'com.yourcompany.yourapp', // Replace with your package name
+            userAgentPackageName: 'com.yourcompany.yourapp',
           ),
-          // Add markers layer
           MarkerLayer(
             markers: _markers,
           ),
-          // Optionally, add other layers like polygons, polylines, etc.
-          // PolylineLayer(polylines: []),
-          // PolygonLayer(polygons: []),
         ],
       ),
-      // Optional: Add a FAB to recenter on the user's location
-      // if (widget.userCurrentPosition != null)
-      //   FloatingActionButton(
-      //     onPressed: () {
-      //       if (_mapController != null && widget.userCurrentPosition != null) {
-      //         _mapController.move(
-      //           LatLng(widget.userCurrentPosition!.latitude, widget.userCurrentPosition!.longitude),
-      //           15.0, // Zoom level when recentering
-      //         );
-      //       }
-      //     },
-      //     child: const Icon(Icons.my_location),
-      //   ),
     );
   }
 }
