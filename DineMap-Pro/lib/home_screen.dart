@@ -8,6 +8,8 @@ import 'cubits/user/user_state.dart';
 import 'models/store.dart';
 import 'custom_widgets/store_card.dart';
 import 'map_screen.dart'; // Import the new map screen
+import 'favorites_screen.dart'; // Import the new favorites screen
+
 
 class HomeScreen extends StatefulWidget {
   final int? userId;
@@ -68,12 +70,70 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor:
                     Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
                 elevation: 0.5,
+                // In HomeScreen.dart's SliverAppBar actions
+                // In HomeScreen.dart's SliverAppBar actions
+                actions: [
+                  BlocBuilder<StoreCubit, StoreState>(
+                    builder: (context, storeState) {
+                      final storeCubit = context.read<StoreCubit>();
+                      bool hasFavorites = storeCubit.favoriteStores.isNotEmpty;
+                      int favoriteCount = storeCubit.favoriteStores.length;
+
+                      // Define colors for clarity
+                      final Color activeColor = Colors.redAccent; // Or Colors.red[700] for a deeper red
+                      final Color inactiveColor = Colors.grey[700]!; // A clear inactive color
+                      final Color activeIconTextColor = Colors.white;
+                      final Color inactiveIconTextColor = inactiveColor; // Icon color same as text for inactive
+                      final Color inactiveBackgroundColor = Colors.grey[200]!;
+
+                      return Padding(
+                        // This padding is for the chip within the AppBar's actions list
+                        padding: const EdgeInsets.only(right: 12.0, top: 8.0, bottom: 8.0), // Adjusted for centering
+                        child: ActionChip(
+                          // elevation: hasFavorites ? 2.0 : 0.5, // Subtle shadow for active state
+                          // visualDensity: VisualDensity.compact, // Tighter packing if needed
+                          backgroundColor: hasFavorites ? activeColor : inactiveBackgroundColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0), // Standard pill shape
+                            // side: BorderSide( // Optional border for inactive state
+                            //   color: hasFavorites ? Colors.transparent : Colors.grey[400]!,
+                            //   width: 1,
+                            // ),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0), // Overall padding for the chip
+                          labelPadding: EdgeInsets.only(left: favoriteCount > 0 || !hasFavorites ? 4.0 : 0), // Reduce left padding if only showing icon
+                          avatar: Icon(
+                            hasFavorites ? Icons.favorite : Icons.favorite_border,
+                            color: hasFavorites ? activeIconTextColor : inactiveIconTextColor,
+                            size: 18, // Slightly larger icon
+                          ),
+                          label: Text(
+                            // Only show count if > 0, otherwise, maybe no text or just a very short one if needed
+                            favoriteCount > 0 ? '$favoriteCount' : (hasFavorites ? '' : 'Favorites'),
+                            style: TextStyle(
+                              color: hasFavorites ? activeIconTextColor : inactiveIconTextColor,
+                              fontWeight: hasFavorites ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 13,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+                            );
+                          },
+                          tooltip: 'My Favorites',
+                        ),
+                      );
+                    },
+                  ),
+                ],
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(
                       kToolbarHeight + 10), // Space for TextField
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0, vertical: 10.0),
+                        horizontal: 15.0, vertical: 5.0),
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(

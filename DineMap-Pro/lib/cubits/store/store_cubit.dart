@@ -18,6 +18,9 @@ class StoreCubit extends Cubit<StoreState> {
   final Map<int, Store> _favoriteStores = {};
   Position? _currentPosition;
 
+  Map<int, Store> get favoriteStores => Map.unmodifiable(_favoriteStores);
+  Position? get currentPositionGetter => _currentPosition;
+
   void setUserId(int? userId) {
     _userId = userId;
     if (_userId != null) { // Only fetch if userId is set
