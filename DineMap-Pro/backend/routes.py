@@ -1,9 +1,25 @@
 from flask import request, jsonify, Response
+from flask_cors import CORSimport
 from models import User, Restaurant, Product, app, db
 import requests
 from math import radians, cos, sin, asin, sqrt
 import re
 from difflib import SequenceMatcher
+
+@app.route("/")
+def home():
+    return jsonify({"message": "Hello from Flask on Vercel!"})
+
+CORS(app)
+
+# Entry point for Vercel
+def handler(environ, start_response):
+    return app(environ, start_response)
+
+# Supress favicon requests
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 # Registration routes
 
