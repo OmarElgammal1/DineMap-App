@@ -34,7 +34,8 @@ class OpenRouteService {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      // Explicitly decode the response body as UTF-8
+      return json.decode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to get directions: ${response.body}');
     }
@@ -68,8 +69,6 @@ class OpenRouteService {
 
     return points;
   }
-
-
 
   // Parse duration from response
   static String formatDuration(double seconds) {
